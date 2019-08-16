@@ -15,27 +15,19 @@
 ?>
 <!DOCTYPE html>
 <html>
-
     <head>
         <meta charset="utf-8">
         <title>Портал инструкций</title>
         <link rel="stylesheet" href="./css/bootstrap.css">
         <script type="text/javascript" src="./js/const.js"></script>
+        <script type="text/javascript" src="./js/common.js"></script>
         <script type="text/javascript">
-            function showhide(id) {
-                if (document.getElementById(id).style.display == 'none') {
-                    document.getElementById(id).style.display = 'block';
-                } else {
-                    document.getElementById(id).style.display = 'none';
-                }
-            }
-            
-            function sendfeedback(str_default) {
+            function sendFeedback(str_default) {
                 usranswer = prompt('Введите краткое описание ошибки в инструкции с указанием пункта:', str_default);
                 if (usranswer != '' && usranswer != null) {
                     if (usranswer.length > const_feedback_length) {
                         alert('Слишком длинное сообщение (больше ' + const_feedback_length + ' символов). Пожалуйста, введите ещё раз.');
-                        sendfeedback(usranswer.substring(0, 535));
+                        sendFeedback(usranswer.substring(0, 535));
                     } else {
                         // TO DO здесь брать переменную и отправлять на запись
                         console.log(usranswer);
@@ -43,7 +35,7 @@
                 }
             }
             
-            function setbyconst() {
+            function setByConst() {
                 document.getElementById('copyright').innerHTML = const_copyright;
             }
         </script>
@@ -51,19 +43,9 @@
     
     <body>
         <div id="wrapper">
-            <div class="table-responsive text-center">
-                <table class="bhi" style="width: 100%">
-                    <tbody>
-                        <tr>
-                            <td style="width: 551px" class="text-center"><a href="#"><img src="./img/genlogo.png" alt="Лого" width="551px" height="62px" title="Перейти на главную страницу"></a></td>
-                            <td class="text-center text-char-header">Портал инструкций по работе с АСРН-2</td>
-                            <td>
-                                <button type="button" class="btn feedbackbtn" onclick="sendfeedback('');" title="Сообщить о неточностях в инструкции">Сообщить об ошибке</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <?php
+                draw_header(1);
+            ?>
             
             <table class="bhi text-char-middle" style="width: 100%">
                 <tbody style="text-align: justify; vertical-align: top">
@@ -72,11 +54,11 @@
                             <p class="text-char-larger">Разделы</p>
                             <ul>
                                 <li>Пункт</li>
-                                <a href="#" onclick="showhide('meow');">Папка</a>
+                                <a href="#" onclick="showHide('meow');">Папка</a>
                                 <ul id='meow' style="display: none">
                                     <li>Пункт в папке</li>
                                     <li>Пункт в папке!</li>
-                                    <a href="#" onclick="showhide('meowwaf');">Папка в папке</a>
+                                    <a href="#" onclick="showHide('meowwaf');">Папка в папке</a>
                                     <ul id='meowwaf' style="display: none">
                                         <li>Пункт в папке в папке</li>
                                         <li>Пункт в папке в папке</li>
@@ -86,13 +68,14 @@
                                 <li>Пункт</li>
                                 <li>Пункт</li>
                             </ul>
+                            <!-- TO DO Обработка, конфигурация не указана -->
                             <div id="confisempty" style="display: none">
                                 <p class="warning-info">Конфигурация не указана!<br>Выберите название из списка:</p>
                                 <select class="text-char-middle">
                                     <option value="">АСРН-2
                                     <option value="">АСУСЭиРП
                                 </select>
-                                <button class="btn confirmbtn okbtn">ОК</button>
+                                <button class="btn confirm-btn ok-btn">ОК</button>
                             </div>
                         </td>
                         
@@ -105,23 +88,12 @@
                 </tbody>
             </table>
             
-            <table class="bhi text-char-small extra-info" style="margin-left: 25%; width: 75%; text-align: right">
-                <tbody style="text-align: center">
-                    <tr>
-                        <td style="text-align: left">
-                            <a id="copyright">©  ООО «Иркутская Энергосбытовая компания», 2019 г. 0+</a>
-                        </td>
-                        <td style="text-align: right">
-                            <a href="./login/index.php">
-                                <img src="./img/adminLogin.png" title="Вход для администраторов и контент-менеджеров">
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <?php
+                draw_footer(1);
+            ?>
         </div>
         <script type="text/javascript">
-            setbyconst();
+            setByConst();
         </script>
     </body>
 </html>

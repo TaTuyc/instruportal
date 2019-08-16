@@ -1,4 +1,5 @@
 <?php
+	include_once '../php/iface.php';
     // TO DO авторизацию закодить
     /*$data = $_POST;
     if (isset($data['log_in'])) {
@@ -32,7 +33,7 @@
         <link rel="stylesheet" href="../css/bootstrap.css">
         <script type="text/javascript" src="../js/const.js"></script>
         <script type="text/javascript">
-            function setbyconst() {
+            function setByConst() {
                 document.getElementById('copyright').innerHTML = const_copyright;
             }
         </script>
@@ -40,19 +41,9 @@
 
 	<body>
         <div id="wrapper">
-            <div class="table-responsive text-center">
-                <table class="bhi" style="width: 100%">
-                    <tbody>
-                        <tr>
-                            <td style="width: 551px" class="text-center"><a href="../index.php"><img src="../img/genlogo.png" alt="Лого" width="551px" height="62px" title="Перейти на главную страницу"></a></td>
-                            <td class="text-center text-char-header">Портал инструкций по работе с АСРН-2</td>
-                            <td>
-                                <button type="button" class="btn feedbackbtn" style="color: transparent; background-color: transparent">Сообщить об ошибке</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <?php
+				draw_header(2);
+			?>
             
             <form id="login" action="index.php" method="post">
                 <h1>Вход в систему</h1>
@@ -70,12 +61,12 @@
                 </fieldset>
             </form>
             
-            <div id="footer" class="text-char-small extra-info">
-                <a id="copyright">©  ООО «Иркутская Энергосбытовая компания», 2019 г. 0+</a>
-            </div>
+            <?php
+				draw_footer(2);
+			?>
         </div>
         <script type="text/javascript">
-            setbyconst();
+            setByConst();
         </script>
 	</body>
 </html>
