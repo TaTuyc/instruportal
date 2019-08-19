@@ -1,6 +1,13 @@
 <?php
-    include_once '../../php/iface.php';
-?>
+include_once '../../php/iface.php';
+include_once '../../php/common.php';
+
+if (isset($_POST['instruportal_logout'])) {
+    unset($_SESSION['instruportal_user']);
+    header('Location: ../../index.php');
+}
+if (isset($_SESSION['instruportal_user'])) {
+    ?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -20,7 +27,8 @@
                     id = getIdForInsElem(idParent, parent.innerHTML);
                     newSelect = '<select class="more-padding big-width"><option value="">Данные</option></select>\n';
                     newDelBtn = '<button type="button" class="btn remove-btn small-width-less lowly-advanced" onclick="removeElem(\'' + id + '\');">Открепить</button>';
-                    parent.innerHTML = parent.innerHTML + '<div id="' + id + '">' + newSelect + newDelBtn + '</div>';
+                    content = '<div id="' + id + '">' + newSelect + newDelBtn + '</div>';
+                    parent.insertAdjacentHTML("beforeend", content);
                 }                
             }
         </script>
@@ -73,8 +81,12 @@
         </div>
         <script type="text/javascript">
             setByConst();
+            addLogoutBtn(3);
             setPageLabel("Настройка связей с конфигурациями 1С");
-            hideElem('feedbackbtn');
         </script>
     </body>
 </html>
+    <?php
+} else {
+    header('Location: ../../index.php');
+}

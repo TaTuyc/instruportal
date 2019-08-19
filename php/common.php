@@ -71,4 +71,53 @@
         $result['cd'] = $dirnow;
         return $result;
     }
+    
+    // --------------------------------------------------------------------------------------------------------
+    // Функции для работы с БД
+    // --------------------------------------------------------------------------------------------------------
+    
+    session_start();
+    
+    // Соединение с базой данных путём создания PDO-объекта
+    function connect_db () {
+        try {
+            $pdo = new PDO('mysql:host=localhost; dbname=Instruportal; charset=utf8', 'root', '62996326');
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $pdo;
+        } catch (PDOException $e) {
+            die('Подключение не удалось. Код ошибки: ' . $e->getMessage());
+        }
+    }
+    
+    // Аутентификация
+    function find_user ($pdo, $login) {
+        $result = $pdo->prepare("SELECT ID_user
+            FROM User 
+            WHERE login = ? LIMIT 1");
+        $result->execute(array($login));
+        if ($result->rowCount() == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    function find_password($pdo, $login) {
+        $sql = "SELECT password 
+            FROM User 
+            WHERE login = ? LIMIT 1";
+        $result = $pdo->prepare($sql);
+        $result->execute(array($login));
+        foreach($result as $row) {
+            return htmlspecialchars($row['password']);
+        }
+    }
+    
+    function check_password($pdo, $login, $pw) {
+        if (password_verify($pw, find_password($pdo, $login))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 ?>

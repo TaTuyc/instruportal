@@ -1,6 +1,13 @@
 <?php
-    include_once '../../php/iface.php';
-?>
+include_once '../../php/iface.php';
+include_once '../../php/common.php';
+
+if (isset($_POST['instruportal_logout'])) {
+    unset($_SESSION['instruportal_user']);
+    header('Location: ../../index.php');
+}
+if (isset($_SESSION['instruportal_user'])) {
+    ?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -183,8 +190,11 @@
         </div>
         <script type="text/javascript">
             setByConst();
+            addLogoutBtn(3);
             setPageLabel("Управление инструкциями");
+            // Форма создания инструкции
             createElem(null, 'file');
+            
             document.getElementById('wrapper').onclick = function(e) {
                 id = e.target.id;
                 normId = id.substring(2);
@@ -225,3 +235,7 @@
         </script>
     </body>
 </html>
+    <?php
+} else {
+    header('Location: ../../index.php');
+}

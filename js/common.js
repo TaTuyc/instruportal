@@ -54,3 +54,24 @@ function getIdForInsElem(insId, insInnerHTML) {
 function removeElem(id) {
     document.getElementById(id).parentNode.removeChild(document.getElementById(id));
 }
+function addLogoutBtn(level) {
+    parent = document.getElementById('feedbackbtn');
+    if (parent != null) {
+        switch(level) {
+            case 1:
+                addPath = './';
+                break;
+            case 2:
+                addPath = '../';
+                break;
+            case 3:
+                addPath = '../../';
+                break;
+            default:
+                addPath = './';
+                break;
+        }
+        newBtn = '<a href="' + addPath + 'php/logout.php"><button id="logoutbtn" type="button" class="btn remove-btn">Выход</button></a>';
+        parent.insertAdjacentHTML("beforeend", newBtn);
+    }
+}

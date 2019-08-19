@@ -21,11 +21,25 @@ if (isset($_SESSION['instruportal_user'])) {
                 document.getElementById('copyright').innerHTML = const_copyright;
             }
             
-            function getResetSettingConfirmation() {
-                var answer = confirm("Сбросить выделенные настройки к значениям по умолчанию?\nОтменить это действие будет невозможно.");
+            function getPWUpdateConfirmation() {
+                var answer = confirm("Обновить пароли?\nОтменить это действие будет невозможно.");
                 if (answer) {
-                    console.log(id + ' --- ' + type);
-                    // TO DO сбросить
+                    // TO DO обновить
+                }
+            }
+            
+            function getDeleteConfirmation() {
+                var answer = confirm("Удалить выбранные учётные записи?\nОтменить это действие будет невозможно.");
+                if (answer) {
+                    // TO DO удалить
+                }
+            }
+            
+            function checkPW() {
+                if (document.getElementById('pw1').value != document.getElementById('pw2').value) {
+                    alert("Пароли не совпадают!")
+                } else {
+                    // TO DO записать уч.данные
                 }
             }
         </script>
@@ -38,13 +52,29 @@ if (isset($_SESSION['instruportal_user'])) {
             ?>
             
             <form method="post" action="../../php/common.php">
-                <div class="text-center">
-                    <button type="submit" class="btn feedback-btn report-btn" name="savesettings" title="Сохранить внесённые изменения">
-                        Сохранить
+                <div class="text-center" style="float: left">
+                    <button type="button" class="btn feedback-btn report-btn" name="addusers" onclick="showElem('newuser');" title="Создание учётной записи">
+                        Создать
                     </button>
-                    <button type="button" class="btn feedback-btn report-btn" onclick="getResetSettingConfirmation();" title="Сбросить настройки к значениям по умолчанию">
-                        Сбросить
+                    <button type="button" class="btn feedback-btn report-btn" name="saveusers" onclick="getPWUpdateConfirmation();" title="Сохранить внесённые изменения">
+                        Обновить пароли
                     </button>
+                    <button type="button" class="btn feedback-btn report-btn" name="deleteusers" onclick="getDeleteConfirmation();" title="Удалить выбранные учётные записи">
+                        Удалить
+                    </button>
+                </div>
+                
+                <div id="newuser" class="medium-width" style="float: right; margin: 0.5rem">
+                    <table class="no-border">
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="fat-elem fat-border no-margin" placeholder="Логин учётной записи"></td>
+                                <td><input id="pw1" type="password" class="fat-elem fat-border no-margin" placeholder="Пароль"></td>
+                                <td><input id="pw2" type="password" class="fat-elem fat-border no-margin" placeholder="Пароль (ещё раз)"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn confirm-btn ok-btn medium-width more-padding" onclick="checkPW();" title="Записать учётную запись в базу данных">Создать</button>
                 </div>
                 
                 <table class="text-char-middle text-center" style="width: 100%; margin: 0.5rem">
@@ -53,8 +83,8 @@ if (isset($_SESSION['instruportal_user'])) {
                             <th class="lowly-advanced">
                                 <button type="button" class="btn feedback-btn lowly" title="Выделить всё / снять выделение" style="float: left" onclick="mark('marks', 'orientmark');">Все</button>
                             </th>
-                            <th>Параметр</th>
-                            <th>Значение</th>
+                            <th>Пользователь</th>
+                            <th>Новый пароль</th>
                         </tr>
                         <tr>
                             <td><input id="orientmark" type="checkbox" name="marks" value="1">1</td>
@@ -97,10 +127,11 @@ if (isset($_SESSION['instruportal_user'])) {
                             <td>
                                 <input type="text" class="fat-elem fat-border no-margin" placeholder="Значение параметра">
                             </td>
-                        </tr>
+                        </tr>                        
                     </tbody>
                 </table>
             </form>
+            
             <?php
                 draw_footer(3);
             ?>
@@ -108,7 +139,8 @@ if (isset($_SESSION['instruportal_user'])) {
         <script type="text/javascript">
             setByConst();
             addLogoutBtn(3);
-            setPageLabel("Настройки портала инструкций");
+            setPageLabel("Настройка связей с конфигурациями 1С");
+            hideElem('newuser');
         </script>
     </body>
 </html>

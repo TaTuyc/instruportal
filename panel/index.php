@@ -1,6 +1,13 @@
 <?php
-    include_once '../php/iface.php';
-?>
+include_once '../php/iface.php';
+include_once '../php/common.php';
+
+if (isset($_POST['instruportal_logout'])) {
+    unset($_SESSION['instruportal_user']);
+    header('Location: ../index.php');
+}
+if (isset($_SESSION['instruportal_user'])) {
+    ?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,6 +15,7 @@
         <title>Портал инструкций</title>
         <link rel="stylesheet" href="../css/bootstrap.css">
         <script type="text/javascript" src="../js/const.js"></script>
+        <script type="text/javascript" src="../js/common.js"></script>
         <script type="text/javascript">
             function setByConst() {
                 document.getElementById('copyright').innerHTML = const_copyright;
@@ -52,6 +60,11 @@
                         Синхронизация с 1С
                     </button>
                 </a>
+                <a href="./users/index.php">
+                    <button type="button" class="btn confirm-btn panel-btn" title="Обновление паролей и удаление учётных записей">
+                        Управление учётными записями
+                    </button>
+                </a>
             </div>
             
             <?php
@@ -60,6 +73,11 @@
         </div>
         <script type="text/javascript">
             setByConst();
+            addLogoutBtn(2);
         </script>
     </body>
-</html>   
+</html>
+<?php
+} else {
+    header('Location: ../index.php');
+}
