@@ -37,15 +37,21 @@
                         Журнал просмотров
                     </button>
                 </a>
-                <button type="button" class="btn confirm-btn panel-btn" title="Просмотр сообщений о неточностях в инструкциях, управление списком сообщений">
-                    Сообщения об ошибках
-                </button>
-                <button type="button" class="btn confirm-btn panel-btn" title="Настройка параметров работы портала (ведение логов, поддержка IE6 и др.)">
-                    Настройки портала
-                </button>
-                <button type="button" class="btn confirm-btn panel-btn" title="Настройка связей инструкций с объектами конфигурации">
-                    Синхронизация с 1С
-                </button>
+                <a href="./feedback/index.php">
+                    <button type="button" class="btn confirm-btn panel-btn" title="Просмотр сообщений о неточностях в инструкциях, управление списком сообщений">
+                        Сообщения об ошибках
+                    </button>
+                </a>
+                <a href="./settings/index.php">
+                    <button type="button" class="btn confirm-btn panel-btn" title="Настройка параметров работы портала (ведение логов, поддержка IE6 и др.)">
+                        Настройки портала
+                    </button>
+                </a>
+                <a href="./sync/index.php">
+                    <button type="button" class="btn confirm-btn panel-btn" title="Настройка связей инструкций с объектами конфигурации">
+                        Синхронизация с 1С
+                    </button>
+                </a>
             </div>
             
             <?php

@@ -47,7 +47,7 @@
                 }
             }
             
-            function get_delete_confirmation(id, type) {
+            function getDeleteConfirmation(id, type) {
                 var answer = confirm("Удалить элемент?");
                 if (answer) {
                     console.log(id + ' --- ' + type);
@@ -157,7 +157,7 @@
                                 <p id="dlabel" class="text-char-larger">Создание папки</p>
                                 <input type="text" class="fat-elem fat-border" readonly="">
                                 <input type="text" class="fat-elem fat-border" placeholder="Имя папки" required="" maxlength="535">
-                                <button type="submit" class="btn confirm-btn ok-btn">ОК</button>
+                                <button type="submit" class="btn confirm-btn ok-btn small-width more-padding">ОК</button>
                             </form>
                             <!-- Форма создания инструкции -->
                             <form id="newfile" class="new-dir-or-file" action="../../php/common.php" method="post">
@@ -170,7 +170,7 @@
                                 <input type="file" class="fat-elem" name="docreadonly">
                                 <p class="text-char-middle">Файл для чтения в IE (mhtml)</p>
                                 <input type="file" class="fat-elem" name="docreadonlyie">
-                                <button type="submit" class="btn confirm-btn ok-btn">ОК</button>
+                                <button type="submit" class="btn confirm-btn ok-btn small-width more-padding">ОК</button>
                             </form>
                         </td>
                     </tr>
@@ -211,11 +211,11 @@
                         break;
                     // delete directory
                     case 'dd':
-                        get_delete_confirmation(normId, 'dir');
+                        getDeleteConfirmation(normId, 'dir');
                         break;
                     // delete file
                     case 'df':
-                        get_delete_confirmation(normId, 'file');
+                        getDeleteConfirmation(normId, 'file');
                         break;
                     default:
                         console.log(e.target.id);

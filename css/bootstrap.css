@@ -55,7 +55,7 @@ table {
 }
 select {
     width: 100%;
-    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    padding: 0;
     line-height: 1.5;
     vertical-align: middle;
     background: #fff;
@@ -86,6 +86,9 @@ input {
 }
 .text-usual tr td {
     text-align: left;
+}
+.left-upper tr td {
+    vertical-align: top;
 }
 .text-add-padding {
     padding-top: 0.5rem;
@@ -155,17 +158,49 @@ input {
     width: 100%;
 }
 .ok-btn {
-    width: 50%;
     min-width: 70px;
     max-width: 1000px;
     margin: 1rem;
     margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+}
+.remove-btn {
+    background-color: black;
+    color: white;
+    font-weight: bolder;
+}
+.big-width {
+    width: 80%;
+}
+.medium-width {
+    width: 50%;
+}
+.medium-width-less {
+    width: 40%;
+}
+.small-width {
+    width: 25%;
+}
+.small-width-less {
+    width: 15%;
+}
+.tiny-width {
+    margin: 1%;
+    width: 8%;
+}
+.more-margin {
+    margin: 0.2rem !important;
+}
+.more-padding {
+    padding: 0.2rem !important;
 }
 .panel-btn {
+    background: gray;
     width: 60%;
     min-width: 400px;
     max-width: 1000px;
-    margin: 0.7rem; 
+    margin: 0.5rem; 
 }
 .report-btn {
     width: 15%;
@@ -199,7 +234,7 @@ input {
     margin-left: 0.5rem;
 }
 .fat-elem {
-    width: 100%;
+    width: 90%;
     max-width: 1000px;
     margin-top: 0.2rem;
     margin-bottom: 0.2rem;
@@ -218,10 +253,18 @@ input {
     margin-top: 0;
     margin-bottom: 0;
 }
-/*.narrow {
-    margin-left: 0;
-    margin-right: 0;
-}*/
+.lowly-advanced {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0;
+}
+.narrow {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+.no-margin {
+    margin: 0;
+}
 .striped tr:nth-child(odd) {
     background-color: #acb3d0;
 }

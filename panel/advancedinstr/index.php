@@ -45,7 +45,7 @@
                             <option value="">миу2</option>
                             <option value="">миу3</option>
                         </select></td>
-                        <td><button id="o0" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o0" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                     <tr>
                         <td>Папка</td>
@@ -55,7 +55,7 @@
                             <option value="">мяу2</option>
                             <option value="">мяу3</option>
                         </select></td>
-                        <td><button id="o1" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o1" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                     <tr>
                         <td>Инструкция</td>
@@ -65,7 +65,7 @@
                             <option value="">моу2</option>
                             <option value="">моу3</option>
                         </select></td>
-                        <td><button id="o2" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o2" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                 </tbody>
                 
@@ -91,7 +91,7 @@
                             <option value="">миу2</option>
                             <option value="">миу3</option>
                         </select></td>
-                        <td><button id="o0" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o0" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                     <tr>
                         <td>Папка</td>
@@ -101,7 +101,7 @@
                             <option value="">мяу2</option>
                             <option value="">мяу3</option>
                         </select></td>
-                        <td><button id="o1" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o1" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                     <tr>
                         <td>Инструкция</td>
@@ -111,7 +111,7 @@
                             <option value="">моу2</option>
                             <option value="">моу3</option>
                         </select></td>
-                        <td><button id="o2" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o2" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                 </tbody>
                 
@@ -137,7 +137,7 @@
                             <option value="">миу2</option>
                             <option value="">миу3</option>
                         </select></td>
-                        <td><button id="o0" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o0" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                     <tr>
                         <td>Папка</td>
@@ -147,7 +147,7 @@
                             <option value="">мяу2</option>
                             <option value="">мяу3</option>
                         </select></td>
-                        <td><button id="o1" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o1" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                     <tr>
                         <td>Инструкция</td>
@@ -157,7 +157,7 @@
                             <option value="">моу2</option>
                             <option value="">моу3</option>
                         </select></td>
-                        <td><button id="o2" type="button" class="btn confirm-btn ok-btn lowly">ОК</button></td>
+                        <td><button id="o2" type="button" class="btn confirm-btn ok-btn lowly medium-width">ОК</button></td>
                     </tr>
                 </tbody>
             </table>

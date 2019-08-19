@@ -31,12 +31,12 @@
                         Поиск ответственного
                     </button>
                     <div id="search" class="new-dir-or-file" style="float: right">
-                        <select>
+                        <select class="more-padding">
                             <option value="">Раз инструкция</option>
                             <option value="">Два инструкция</option>
                             <option value="">Три инструкция</option>
                         </select>
-                        <button type="button" class="btn confirm-btn ok-btn" onclick="getResponsible">Найти</button>
+                        <button type="button" class="btn confirm-btn ok-btn medium-width more-padding" onclick="getResponsible">Найти</button>
                     </div>
                 </form>
             </div>
