@@ -173,6 +173,19 @@
         print json_encode('');
     }
     
+    // Обновление учётных записей пользователей
+    function update_users($pdo, $users_json, $pws_json) {
+        $users  = json_decode($users_json);
+        $pws    = json_decode($pws_json);
+        $sql    = "UPDATE User SET password = ? WHERE ID_user = ?";
+        $result = $pdo->prepare($sql);
+        
+        for ($i = 0, $l = count($users); $i < $l; $i++) {
+            $result->execute(array(password_hash($pws[$i], PASSWORD_DEFAULT), $users[$i]));
+        }
+        print json_encode('');
+    }
+    
     // --------------------------------------------------------------------------------------------------------
     // Ветви обработчиков форм
     // --------------------------------------------------------------------------------------------------------

@@ -75,3 +75,14 @@ function addLogoutBtn(level) {
         parent.insertAdjacentHTML("beforeend", newBtn);
     }
 }
+// Формирование массива, состоящего из значений первичного ключа (хранятся в id)
+function getMarkedElements(checkboxName) {
+    allElems = document.getElementsByName(checkboxName);
+    elems = [];    
+    allElems.forEach(function(elem) {
+        if (elem.checked) {
+            elems.push(elem.id);
+        }
+    });    
+    return elems;
+}

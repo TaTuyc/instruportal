@@ -21,6 +21,9 @@
             case 'delete_users':
                 echo delete_users($pdo, $_POST['users']);
                 break;
+            case 'update_users':
+                echo update_users($pdo, $_POST['users'], $_POST['pws']);
+                break;
             default:
                 break;
         }

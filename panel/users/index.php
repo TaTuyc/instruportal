@@ -23,25 +23,43 @@ if (isset($_SESSION['instruportal_user'])) {
                 document.getElementById('copyright').innerHTML = const_copyright;
             }
             
+            function getPWArray(arr) {
+                var result = [];
+                arr.forEach(function(elem) {
+                    result.push(document.getElementById('pw' + elem).value);
+                });
+                return result;
+            }
+            
             function getPWUpdateConfirmation() {
                 var answer = confirm("Обновить пароли?\nОтменить это действие будет невозможно.");
                 if (answer) {
-                    // TO DO обновить
+                    updatingUsers   = getMarkedElements('marks');
+                    passwords       = getPWArray(updatingUsers);
+                    
+                    // Отправка на сервер для обновления
+                    if (updatingUsers !== []) {
+                        var x = $.ajax({
+                            type: 'POST',
+                            url: '../../php/ajaxdata.php',
+                            async: false,
+                            data: {
+                                action: 'update_users',
+                                users:  JSON.stringify(updatingUsers),
+                                pws:    JSON.stringify(passwords)},
+                            dataType: "json",
+                            success: function(data) {
+                                location.reload();
+                            }
+                        });
+                    }
                 }
             }
             
             function getDeleteConfirmation() {
                 var answer = confirm("Удалить выбранные учётные записи?\nОтменить это действие будет невозможно.");
                 if (answer) {
-                    allUsers = document.getElementsByName('marks');
-                    deletingUsers = [];
-                    
-                    // Формирование массива, состоящего из значений первичного ключа (хранятся в id), для отправки на сервер и последующего удаления
-                    allUsers.forEach(function(user) {
-                        if (user.checked) {
-                            deletingUsers.push(user.id);
-                        }
-                    });
+                    deletingUsers = getMarkedElements('marks');
                     
                     // Отправка на сервер для удаления
                     if (deletingUsers !== []) {
@@ -104,7 +122,7 @@ if (isset($_SESSION['instruportal_user'])) {
                                 <td><input id="` + id + '" type="checkbox" name="marks" value="' + item[1] + '">' + (i + 1) + `</td>
                                 <td>` + item[1] + `</td>
                                 <td>
-                                    <input id="pw` + id + `" type="text" class="fat-elem fat-border no-margin" placeholder="Новый пароль">
+                                    <input id="pw` + id + `" type="password" class="fat-elem fat-border no-margin" placeholder="Новый пароль">
                                 </td>
                             </tr>`;
                             parent.insertAdjacentHTML("beforeend", content);
