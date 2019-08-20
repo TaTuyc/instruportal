@@ -73,6 +73,19 @@
     }
     
     // --------------------------------------------------------------------------------------------------------
+    // Вспомогательные функции
+    // --------------------------------------------------------------------------------------------------------
+    
+    // Получить столбец из результата запроса
+    function get_column($result, $column) {
+        $arr = array();
+        while ($row = $result->fetch()) {
+            $arr[] = htmlentities($row[$column]);
+        }
+        return $arr;
+    }
+    
+    // --------------------------------------------------------------------------------------------------------
     // Функции для работы с БД
     // --------------------------------------------------------------------------------------------------------
     
@@ -91,9 +104,10 @@
     
     // Аутентификация
     function find_user ($pdo, $login) {
-        $result = $pdo->prepare("SELECT ID_user
+        $sql = "SELECT ID_user
             FROM User 
-            WHERE login = ? LIMIT 1");
+            WHERE login = ? LIMIT 1";
+        $result = $pdo->prepare($sql);
         $result->execute(array($login));
         if ($result->rowCount() == 0) {
             return false;
@@ -109,7 +123,7 @@
         $result = $pdo->prepare($sql);
         $result->execute(array($login));
         foreach($result as $row) {
-            return htmlspecialchars($row['password']);
+            return $row['password'];
         }
     }
     
@@ -119,5 +133,52 @@
         } else {
             return false;
         }
+    }
+    
+    // Создание учётной записи пользователя
+    function create_user($pdo, $login, $pw) {
+        $sql = "INSERT INTO User (ID_user, login, password) VALUES (NULL, ?, ?)";
+        $result = $pdo->prepare($sql);
+        $result->execute(array($login, password_hash($pw, PASSWORD_DEFAULT)));
+        header('Location: ../panel/users/index.php');
+    }
+    
+    // Чтение списка учётных записей
+    function get_users_list($pdo) {
+        $sql = "SELECT ID_user, login
+            FROM User";
+        $result = $pdo->prepare($sql);
+        $result->execute();
+        
+        $result_array = array();
+        foreach($result as $row) {
+            $result_array[] = [
+                $row['ID_user'],
+                $row['login']
+            ];
+        }
+        print json_encode($result_array);
+        //print json_encode(get_column($result, 'login'));
+    }
+    
+    // Удаление учётных записей пользователей
+    function delete_users($pdo, $users_json) {
+        $users = json_decode($users_json);
+        $sql = "DELETE FROM User WHERE ID_user = ?";
+        $result = $pdo->prepare($sql);
+        
+        foreach($users as $user) {
+            $result->execute(array($user));
+        }
+        print json_encode('');
+    }
+    
+    // --------------------------------------------------------------------------------------------------------
+    // Ветви обработчиков форм
+    // --------------------------------------------------------------------------------------------------------
+    
+    $pdo = connect_db();
+    if (isset($_POST['nulogin'])) { // new user login
+        create_user($pdo, htmlspecialchars($_POST['nulogin']), htmlspecialchars($_POST['nupw']));
     }
 ?>
