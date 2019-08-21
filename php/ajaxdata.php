@@ -15,6 +15,9 @@
             case 'get_settings':
                 echo get_settings_list($pdo);
                 break;
+            case 'get_conf_tree':
+                echo get_conf_tree($pdo, $_POST['ID_conf']);
+                break;
             default:
                 echo null;
                 break;

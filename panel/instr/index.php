@@ -16,9 +16,26 @@ if (isset($_SESSION['instruportal_user'])) {
         <link rel="stylesheet" href="../../css/bootstrap.css">
         <script type="text/javascript" src="../../js/const.js"></script>
         <script type="text/javascript" src="../../js/common.js"></script>
+        <script type="text/javascript" src="../../jquery/jquerymin.js"></script>
         <script type="text/javascript">
             function setByConst() {
                 document.getElementById('copyright').innerHTML = const_copyright;
+            }
+            
+            function getConfTree() {
+                var x = $.ajax({
+                    type: 'POST',
+                    url: '../../php/ajaxdata.php',
+                    async: false,
+                    data: {
+                        fill:    'get_conf_tree',
+                        ID_conf: 2},
+                    dataType: "json",
+                    success: function(data) {
+                        
+                        console.log(data);
+                    }
+                }).responseText;
             }
             
             function createElem(where, what) {
@@ -194,7 +211,8 @@ if (isset($_SESSION['instruportal_user'])) {
             setPageLabel("Управление инструкциями");
             // Форма создания инструкции
             createElem(null, 'file');
-            
+            // Дерево инструкций конфигурации
+            getConfTree();
             document.getElementById('wrapper').onclick = function(e) {
                 id = e.target.id;
                 normId = id.substring(2);

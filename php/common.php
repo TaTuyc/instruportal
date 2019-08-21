@@ -33,7 +33,7 @@
     }
     
     // Получение дерева файловой системы, отобразимого в web-интерфейсе, из каталогов и файлов-инструкций в html
-    function get_fs_tree($dirnow) {
+    function get_fs_tree_BACK($dirnow) {
         if (substr($dirnow, -1) == '/') {
             $dirnow = substr($dirnow, 0, -1);
         }
@@ -56,9 +56,9 @@
                 default:
                     $fullfilename = $dirnow . '/' . $value;
                     if (is_dir($fullfilename)) {
-                        $buff = get_fs_tree($fullfilename);
+                        $buff = get_fs_tree_BACK($fullfilename);
                         if (count($buff) > 1) {
-                            $result[$key] = get_fs_tree($fullfilename);
+                            $result[$key] = get_fs_tree_BACK($fullfilename);
                         } else {
                             unset($result[$key]);
                         }
@@ -195,8 +195,7 @@
     function get_settings_list($pdo) {
         $sql    = "SELECT ID_set, set_key, set_value
             FROM Setting";
-        $result = $pdo->prepare($sql);
-        $result->execute();
+        $result = $pdo->query($sql);
         
         $result_array = array();
         foreach($result as $row) {
@@ -228,8 +227,7 @@
     function reset_settings($pdo) {
         $sql = "SELECT ID_set, set_key, set_default
             FROM Setting";
-        $result = $pdo->prepare($sql);
-        $result->execute();
+        $result = $pdo->query($sql);
         
         $sql_upd = "UPDATE Setting SET set_value = ? WHERE ID_set = ?";
         $result_upd = $pdo->prepare($sql_upd);
@@ -240,6 +238,56 @@
             ));
         }
         print json_encode('');
+    }
+    
+    function get_children($pdo, $parent_arr, $ID_parent) {
+        $sql       = "SELECT * FROM Folder WHERE ID_fol_parent = ?";
+        $result    = $pdo->prepare($sql);
+        $result->execute(array($ID_parent));
+        if ($result->rowCount() != 0) {
+            return set_children($pdo, $parent_arr, $result);
+        } else {
+            return $parent_arr;    
+        }        
+    }
+    
+    function set_children($pdo, $parent_arr, $children) {
+        foreach($children as $child) {
+            $parent_arr["children"][] = array(
+                "id"        => $child['ID_fol'],
+                "type"      => 'dir',
+                "name"      => $child['fol_name'],
+                "children"  => NULL
+            );
+            end($parent_arr["children"]);
+            $key = key($parent_arr["children"]);
+            
+            $parent_arr["children"][$key] = get_children($pdo, $parent_arr["children"][$key], $child['ID_fol']);
+        }
+        return $parent_arr;
+    }
+    
+    // Получение дерева каталога инструкций для отдельной конфигурации
+    function get_conf_tree($pdo, $ID_conf) {
+        $sql    = "SELECT * FROM Folder WHERE ID_fol = ? LIMIT 1";
+        $result = $pdo->prepare($sql);
+        $result->execute(array($ID_conf));
+        
+        $tree = [];
+        foreach($result as $row) {
+            $tree[] = array(
+                "id"        => $row['ID_fol'],
+                "type"      => 'dir',
+                "name"      => $row['fol_name'],
+                "children"  => NULL
+            );
+            
+            end($tree);
+            $key = key($tree);
+            
+            $tree[$key] = get_children($pdo, $tree[$key], $row['ID_fol']);
+        }
+        print json_encode($tree);
     }
     
     // --------------------------------------------------------------------------------------------------------
