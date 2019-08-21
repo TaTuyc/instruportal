@@ -240,18 +240,45 @@
         print json_encode('');
     }
     
-    function get_children($pdo, $parent_arr, $ID_parent) {
+    // Получение списка дочерних файлов
+    function get_child_files($pdo, $parent_arr, $ID_parent) {
+        $sql    = "SELECT ID_ins, ins_name FROM Instruction WHERE ID_fol = ?";
+        $result = $pdo->prepare($sql);
+        $result->execute(array($ID_parent));
+        if ($result->rowCount() != 0) {
+            return set_child_file($pdo, $parent_arr, $result);
+        } else {
+            return $parent_arr;
+        }
+    }
+    
+    // Запись подробных данных о дочерних файлах
+    function set_child_file($pdo, $parent_arr, $children) {
+        foreach($children as $child) {
+            $parent_arr["children"][] = array(
+                "id"        => $child['ID_ins'],
+                "type"      => 'file',
+                "name"      => $child['ins_name'],
+                "children"  => NULL
+            );
+        }
+        return $parent_arr;
+    }
+    
+    // Получение списка дочерних папок
+    function get_child_dirs($pdo, $parent_arr, $ID_parent) {
         $sql       = "SELECT * FROM Folder WHERE ID_fol_parent = ?";
         $result    = $pdo->prepare($sql);
         $result->execute(array($ID_parent));
         if ($result->rowCount() != 0) {
-            return set_children($pdo, $parent_arr, $result);
+            return set_child_dir($pdo, $parent_arr, $result);
         } else {
             return $parent_arr;    
         }        
     }
     
-    function set_children($pdo, $parent_arr, $children) {
+    // Запись подробных данных о дочерних папках
+    function set_child_dir($pdo, $parent_arr, $children) {
         foreach($children as $child) {
             $parent_arr["children"][] = array(
                 "id"        => $child['ID_fol'],
@@ -262,7 +289,8 @@
             end($parent_arr["children"]);
             $key = key($parent_arr["children"]);
             
-            $parent_arr["children"][$key] = get_children($pdo, $parent_arr["children"][$key], $child['ID_fol']);
+            $parent_arr["children"][$key] = get_child_dirs($pdo, $parent_arr["children"][$key], $child['ID_fol']);
+            $parent_arr["children"][$key] = get_child_files($pdo, $parent_arr["children"][$key], $child['ID_fol']);
         }
         return $parent_arr;
     }
@@ -285,7 +313,8 @@
             end($tree);
             $key = key($tree);
             
-            $tree[$key] = get_children($pdo, $tree[$key], $row['ID_fol']);
+            $tree[$key] = get_child_dirs($pdo, $tree[$key], $row['ID_fol']);
+            $tree[$key] = get_child_files($pdo, $tree[$key], $row['ID_fol']);
         }
         print json_encode($tree);
     }

@@ -85,6 +85,9 @@ if (isset($_SESSION['instruportal_user'])) {
         <div id="wrapper">
             <?php
                 draw_header(3);
+                
+                //$pdo = connect_db();
+                //print_r(get_conf_tree($pdo, 2));
             ?>
             
             <table class="bhi text-char-middle" style="width: 100%">
