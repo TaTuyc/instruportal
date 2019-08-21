@@ -137,16 +137,18 @@
     
     // Создание учётной записи пользователя
     function create_user($pdo, $login, $pw) {
-        $sql = "INSERT INTO User (ID_user, login, password) VALUES (NULL, ?, ?)";
+        $sql    = "INSERT INTO User (ID_user, login, password) VALUES (NULL, ?, ?)";
         $result = $pdo->prepare($sql);
-        $result->execute(array($login, password_hash($pw, PASSWORD_DEFAULT)));
+        $result->execute(array(
+            $login,
+            password_hash($pw, PASSWORD_DEFAULT)
+        ));
         header('Location: ../panel/users/index.php');
     }
     
     // Чтение списка учётных записей
     function get_users_list($pdo) {
-        $sql = "SELECT ID_user, login
-            FROM User";
+        $sql = "SELECT ID_user, login FROM User";
         $result = $pdo->prepare($sql);
         $result->execute();
         
@@ -163,8 +165,8 @@
     
     // Удаление учётных записей пользователей
     function delete_users($pdo, $users_json) {
-        $users = json_decode($users_json);
-        $sql = "DELETE FROM User WHERE ID_user = ?";
+        $users  = json_decode($users_json);
+        $sql    = "DELETE FROM User WHERE ID_user = ?";
         $result = $pdo->prepare($sql);
         
         foreach($users as $user) {
@@ -181,7 +183,61 @@
         $result = $pdo->prepare($sql);
         
         for ($i = 0, $l = count($users); $i < $l; $i++) {
-            $result->execute(array(password_hash($pws[$i], PASSWORD_DEFAULT), $users[$i]));
+            $result->execute(array(
+                password_hash($pws[$i], PASSWORD_DEFAULT),
+                $users[$i]
+            ));
+        }
+        print json_encode('');
+    }
+    
+    // Чтение списка настроек портала
+    function get_settings_list($pdo) {
+        $sql    = "SELECT ID_set, set_key, set_value
+            FROM Setting";
+        $result = $pdo->prepare($sql);
+        $result->execute();
+        
+        $result_array = array();
+        foreach($result as $row) {
+            $result_array[] = [
+                $row['ID_set'],
+                $row['set_key'],
+                $row['set_value']
+            ];
+        }
+        print json_encode($result_array);
+    }
+    
+    // Обновление значений настроек портала
+    function update_settings($pdo, $settings_json) {
+        $settings  = json_decode($settings_json);
+        $sql       = "UPDATE Setting SET set_value = ? WHERE ID_set = ?";
+        $result    = $pdo->prepare($sql);
+        
+        foreach($settings as $setting) {
+            $result->execute(array(
+                $setting[1],
+                $setting[0]
+            ));
+        }
+        print json_encode('');
+    }
+    
+    // Сброс значений настроек портала к значениям по умолчанию
+    function reset_settings($pdo) {
+        $sql = "SELECT ID_set, set_key, set_default
+            FROM Setting";
+        $result = $pdo->prepare($sql);
+        $result->execute();
+        
+        $sql_upd = "UPDATE Setting SET set_value = ? WHERE ID_set = ?";
+        $result_upd = $pdo->prepare($sql_upd);
+        foreach($result as $row) {
+            $result_upd->execute(array(
+                $row['set_default'],
+                $row['ID_set']
+            ));
         }
         print json_encode('');
     }
