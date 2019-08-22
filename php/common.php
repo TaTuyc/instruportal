@@ -240,6 +240,15 @@
         print json_encode('');
     }
     
+    // Получение идентификатора корневой папки конфигурации
+    function get_root_folder_id($pdo, $ID_conf) {
+        $sql = "SELECT ID_root_folder FROM Configuration WHERE ID_conf = " . $ID_conf;
+        $result = $pdo->query($sql);
+        foreach($result as $row) {
+            return $row['ID_root_folder'];
+        }
+    }
+    
     // Получение списка дочерних файлов
     function get_child_files($pdo, $parent_arr, $ID_parent) {
         $sql    = "SELECT ID_ins, ins_name FROM Instruction WHERE ID_fol = ?";
@@ -258,8 +267,7 @@
             $parent_arr["children"][] = array(
                 "id"        => $child['ID_ins'],
                 "type"      => 'file',
-                "name"      => $child['ins_name'],
-                "children"  => NULL
+                "name"      => $child['ins_name']
             );
         }
         return $parent_arr;
@@ -297,9 +305,10 @@
     
     // Получение дерева каталога инструкций для отдельной конфигурации
     function get_conf_tree($pdo, $ID_conf) {
+        $ID_root_folder = get_root_folder_id($pdo, $ID_conf);
         $sql    = "SELECT * FROM Folder WHERE ID_fol = ? LIMIT 1";
         $result = $pdo->prepare($sql);
-        $result->execute(array($ID_conf));
+        $result->execute(array($ID_root_folder));
         
         $tree = [];
         foreach($result as $row) {
