@@ -59,17 +59,16 @@ if (isset($_SESSION['instruportal_user'])) {
             }
             
             function getConfTree() {
+                var idConf = 1;
                 var x = $.ajax({
                     type: 'POST',
                     url: '../../php/ajaxdata.php',
                     async: false,
                     data: {
                         fill:    'get_conf_tree',
-                        ID_conf: 1},
+                        ID_conf: idConf},
                     dataType: "json",
                     success: function(data) {
-                        
-                        console.log(data);
                         
                         data.forEach(function(element) {
                             // Разворачивание дерева от корневого каталога инструкций конфигурации (Configuration tree)
@@ -77,6 +76,8 @@ if (isset($_SESSION['instruportal_user'])) {
                         });
                     }
                 }).responseText;
+                document.getElementById('rootdirfordir').value  = idConf;
+                document.getElementById('rootdirforfile').value = idConf;
             }
             
             function createElem(where, what) {
@@ -126,10 +127,12 @@ if (isset($_SESSION['instruportal_user'])) {
                 switch(type) {
                     case 'dir':
                         document.getElementById('fullpathfordir').value     = path;
+                        document.getElementById('dirname').value            = document.getElementById(id).name;
                         document.getElementById('okbtnfordir').value        = id;
                         break;
                     case 'file':
                         document.getElementById('fullpathforfile').value    = path;
+                        document.getElementById('filename').value           = document.getElementById(id).name;
                         document.getElementById('okbtnforfile').value       = id;
                         break;
                 }
@@ -170,73 +173,6 @@ if (isset($_SESSION['instruportal_user'])) {
                 <tbody style="text-align: justify; vertical-align: top">
                     <tr>
                         <td id="conftree" style="width: 60%">
-                            <!--<a id="root" class="text-char-larger">
-                                Разделы
-                                <img id="edroot" src="../../img/pendir.png" class="img-ico">
-                                <img id="ndroot" src="../../img/plusdir.png" class="img-ico">
-                                <img id="ddroot" src="../../img/del.png" class="img-ico">
-                                |<img id="nfroot" src="../../img/plusfile.png" class="img-ico">
-                            </a>
-                            <ul>
-                                <li>
-                                    Пункт
-                                    <img id="ef0" src="../../img/penfile.png" class="img-ico">
-                                    <img id="df0" src="../../img/del.png" class="img-ico">
-                                </li>
-                                <a href="#" onclick="showHide('c1');">
-                                    Папка
-                                </a>
-                                    <img id="ed1" src="../../img/pendir.png" class="img-ico">
-                                    <img id="nd1" src="../../img/plusdir.png" class="img-ico">
-                                    <img id="dd1" src="../../img/del.png" class="img-ico">
-                                    |<img id="nf1" src="../../img/plusfile.png" class="img-ico">
-                                <ul id='c1' style="display: none">
-                                    <li>
-                                        Пункт в папке
-                                        <img id="ef2" src="../../img/penfile.png" class="img-ico">
-                                        <img id="df2" src="../../img/del.png" class="img-ico">
-                                    </li>
-                                    <li>
-                                        Пункт в папке!
-                                        <img id="ef3" src="../../img/penfile.png" class="img-ico">
-                                        <img id="df3" src="../../img/del.png" class="img-ico">
-                                    </li>
-                                    <a href="#" onclick="showHide('c4');">
-                                        Папка в папке
-                                    </a>
-                                        <img id="ed4" src="../../img/pendir.png" class="img-ico">
-                                        <img id="nd4" src="../../img/plusdir.png" class="img-ico">
-                                        <img id="dd4" src="../../img/del.png" class="img-ico">
-                                        |<img id="nf4" src="../../img/plusfile.png" class="img-ico">                                    
-                                    <ul id='c4' style="display: none">
-                                        <li>
-                                            Пункт в папке в папке
-                                            <img id="ef5" src="../../img/penfile.png" class="img-ico">
-                                            <img id="df5" src="../../img/del.png" class="img-ico">
-                                        </li>
-                                        <li>
-                                            Пункт в папке в папке
-                                            <img id="ef6" src="../../img/penfile.png" class="img-ico">
-                                            <img id="df6" src="../../img/del.png" class="img-ico">
-                                        </li>
-                                    </ul>
-                                    <li>
-                                        Пункт в папке
-                                        <img id="ef7" src="../../img/penfile.png" class="img-ico">
-                                        <img id="df7" src="../../img/del.png" class="img-ico">
-                                    </li>
-                                </ul>
-                                <li>
-                                    Пункт
-                                    <img id="ef8" src="../../img/penfile.png" class="img-ico">
-                                    <img id="df8" src="../../img/del.png" class="img-ico">
-                                </li>
-                                <li>
-                                    Пункт
-                                    <img id="ef9" src="../../img/penfile.png" class="img-ico">
-                                    <img id="df9" src="../../img/del.png" class="img-ico">
-                                </li>
-                            </ul>-->
                             <!-- TO DO Обработка, конфигурация не указана -->
                             <div id="confisempty" style="display: none">
                                 <p class="warning-info">Конфигурация не указана!<br>Выберите название из списка:</p>
@@ -259,14 +195,16 @@ if (isset($_SESSION['instruportal_user'])) {
                             <form id="newdir" class="new-dir-or-file" action="../../php/common.php" method="post">
                                 <p id="dlabel" class="text-char-larger">Создание папки</p>
                                 <input id="fullpathfordir" type="text" class="fat-elem fat-border" value="/" readonly="" title="Полный путь к родительской папке">
-                                <input type="text" class="fat-elem fat-border" placeholder="Имя папки" required="" maxlength="535">
+                                <input id="rootdirfordir" type="hidden" name="rootdir" value="">
+                                <input id="dirname" type="text" class="fat-elem fat-border" name="dirname" placeholder="Имя папки" required="" maxlength="535">
                                 <button id="okbtnfordir" type="submit" class="btn confirm-btn ok-btn small-width more-padding" name="okbtnfordir" value="">ОК</button>
                             </form>
                             <!-- Форма создания инструкции -->
-                            <form id="newfile" class="new-dir-or-file" action="../../php/common.php" method="post">
+                            <form id="newfile" enctype="multipart/form-data" class="new-dir-or-file" action="../../php/common.php" method="post">
                                 <p id="flabel" class="text-char-larger">Создание инструкции</p>
                                 <input id="fullpathforfile" type="text" class="fat-elem fat-border" value="/" readonly="" title="Полный путь к родительской папке">
-                                <input type="text" class="fat-elem fat-border" placeholder="Имя инструкции" required="" maxlength="535">
+                                <input id="rootdirforfile" type="hidden" name="rootdir" value="">
+                                <input id="filename" type="text" class="fat-elem fat-border" name="filename" placeholder="Имя инструкции" required="" maxlength="535">
                                 <p class="text-char-middle">Оригинал (doc/docx)</p>
                                 <input type="file" class="fat-elem" name="docoriginal">
                                 <p class="text-char-middle">Файл для чтения (pdf)</p>
@@ -329,7 +267,7 @@ if (isset($_SESSION['instruportal_user'])) {
                         getDeleteConfirmation(normId, 'file');
                         break;
                     default:
-                        console.log(e.target.id);
+                        //console.log(e.target.id);
                         break;
                 }
             };

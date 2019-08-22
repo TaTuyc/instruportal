@@ -241,8 +241,8 @@
     }
     
     // Получение идентификатора корневой папки конфигурации
-    function get_root_folder_id($pdo, $ID_conf) {
-        $sql = "SELECT ID_root_folder FROM Configuration WHERE ID_conf = " . $ID_conf;
+    function get_root_folder_id($pdo, $conf_id) {
+        $sql = "SELECT ID_root_folder FROM Configuration WHERE ID_conf = " . $conf_id;
         $result = $pdo->query($sql);
         foreach($result as $row) {
             return $row['ID_root_folder'];
@@ -250,10 +250,10 @@
     }
     
     // Получение списка дочерних файлов
-    function get_child_files($pdo, $parent_arr, $ID_parent) {
+    function get_child_files($pdo, $parent_arr, $parent_id) {
         $sql    = "SELECT ID_ins, ins_name FROM Instruction WHERE ID_fol = ?";
         $result = $pdo->prepare($sql);
-        $result->execute(array($ID_parent));
+        $result->execute(array($parent_id));
         if ($result->rowCount() != 0) {
             return set_child_file($pdo, $parent_arr, $result);
         } else {
@@ -274,10 +274,10 @@
     }
     
     // Получение списка дочерних папок
-    function get_child_dirs($pdo, $parent_arr, $ID_parent) {
+    function get_child_dirs($pdo, $parent_arr, $parent_id) {
         $sql       = "SELECT * FROM Folder WHERE ID_fol_parent = ?";
         $result    = $pdo->prepare($sql);
-        $result->execute(array($ID_parent));
+        $result->execute(array($parent_id));
         if ($result->rowCount() != 0) {
             return set_child_dir($pdo, $parent_arr, $result);
         } else {
@@ -304,8 +304,8 @@
     }
     
     // Получение дерева каталога инструкций для отдельной конфигурации
-    function get_conf_tree($pdo, $ID_conf) {
-        $ID_root_folder = get_root_folder_id($pdo, $ID_conf);
+    function get_conf_tree($pdo, $conf_id) {
+        $ID_root_folder = get_root_folder_id($pdo, $conf_id);
         $sql    = "SELECT * FROM Folder WHERE ID_fol = ? LIMIT 1";
         $result = $pdo->prepare($sql);
         $result->execute(array($ID_root_folder));
@@ -328,6 +328,95 @@
         print json_encode($tree);
     }
     
+    // Обновление/создание документа: запись в БД двоичных данных
+    function set_doc($pdo, $table, $ins_id, $data) {
+        $sql    = "INSERT INTO $table (ID_ins, data)
+            VALUES ($ins_id, '$data')
+            ON DUPLICATE KEY UPDATE ID_ins = $ins_id";
+        $result = $pdo->query($sql);
+    }
+    
+    // Обновление/создание директории
+    // если указан режим ed (edit directory),   то id используется как собственный для обновления записи,
+    // если указан режим nd (new directory),    то id используется как родительский для создания подчинённой папки
+    function set_dir($pdo, $id, $mode, $dir_name) {
+        switch($mode) {
+            case 'ed':
+                $sql    = "UPDATE Folder SET fol_name = '$dir_name' WHERE ID_fol = $id";
+                $result = $pdo->query($sql);
+                break;
+            case 'nd':
+                $sql    = "INSERT INTO Folder (ID_fol, fol_name, ID_fol_parent) VALUES (NULL, '$dir_name', $id)";
+                $result = $pdo->query($sql);
+                break;
+        }
+    }
+    
+    // Обновление/создание файла (инструкции, к которой можно прикреплять файлы)
+    // если указан режим ef (edit file),    то id используется как собственный для обновления записи,
+    // если указан режим nf (new file),     то id используется как родительский для создания инструкции в папке с этим id
+    function set_file($pdo, $id, $mode, $file_name, $conf_id) {
+        switch($mode) {
+            case 'ef':
+                $time   = date("Y-m-d H:i:s", time());
+                $sql    = "UPDATE Instruction SET ins_name = '$file_name', ins_date = '$time' WHERE ID_ins = $id";
+                
+                try {
+                    $pdo->beginTransaction();
+                        $result = $pdo->query($sql);
+                        
+                        if (is_uploaded_file($_FILES['docoriginal']['tmp_name'])) {
+                            $doc    = addslashes(file_get_contents($_FILES['docoriginal']['tmp_name']));
+                            set_doc($pdo, 'Docoriginal', $id, $doc);
+                        }                        
+                        if (is_uploaded_file($_FILES['docreadonly']['tmp_name'])) {
+                            $doc    = addslashes(file_get_contents($_FILES['docreadonly']['tmp_name']));
+                            set_doc($pdo, 'Docreadonly', $id, $doc);
+                        }
+                        if (is_uploaded_file($_FILES['docreadonlyie']['tmp_name'])) {
+                            $doc    = addslashes(file_get_contents($_FILES['docreadonlyie']['tmp_name']));
+                            set_doc($pdo, 'Docreadonlyie', $id, $doc);
+                        }
+                    $pdo->commit();
+                } catch (PDOException $e) {
+                    $pdo->rollBack();
+                    echo "Запись не удалась. Ошибка: " . $e->getMessage();
+                    exit();
+                }
+                
+                break;
+            case 'nf':
+                $time   = date("Y-m-d H:i:s", time());
+                $sql    = "INSERT INTO Instruction (ID_ins, ins_name, ID_fol, ins_date, ID_user_editor, ID_conf)
+                    VALUES (NULL, '$file_name', $id, '$time', NULL, $conf_id)";
+                try {
+                    $pdo->beginTransaction();
+                        $result = $pdo->query($sql);
+                        $now_id = $pdo->lastInsertId();
+                        
+                        if (is_uploaded_file($_FILES['docoriginal']['tmp_name'])) {
+                            $doc    = addslashes(file_get_contents($_FILES['docoriginal']['tmp_name']));
+                            set_doc($pdo, 'Docoriginal', $now_id, $doc);
+                        }                        
+                        if (is_uploaded_file($_FILES['docreadonly']['tmp_name'])) {
+                            $doc    = addslashes(file_get_contents($_FILES['docreadonly']['tmp_name']));
+                            set_doc($pdo, 'Docreadonly', $now_id, $doc);
+                        }                        
+                        if (is_uploaded_file($_FILES['docreadonlyie']['tmp_name'])) {
+                            $doc    = addslashes(file_get_contents($_FILES['docreadonlyie']['tmp_name']));
+                            set_doc($pdo, 'Docreadonlyie', $now_id, $doc);
+                        }
+                    $pdo->commit();
+                } catch (PDOException $e) {
+                    $pdo->rollBack();
+                    echo "Запись не удалась. Ошибка: " . $e->getMessage();
+                    exit();
+                }
+                
+                break;
+        }
+    }
+    
     // --------------------------------------------------------------------------------------------------------
     // Ветви обработчиков форм
     // --------------------------------------------------------------------------------------------------------
@@ -335,5 +424,22 @@
     $pdo = connect_db();
     if (isset($_POST['nulogin'])) { // new user login
         create_user($pdo, htmlspecialchars($_POST['nulogin']), htmlspecialchars($_POST['nupw']));
+    } elseif (isset($_POST['okbtnfordir'])) { // new directory
+        $okbtnfordir    = htmlspecialchars($_POST['okbtnfordir']);
+        $dirname        = htmlspecialchars($_POST['dirname']);
+        
+        $id             = substr($okbtnfordir, 2);
+        $mode           = substr($okbtnfordir, 0, 2);
+        set_dir($pdo, $id, $mode, $dirname);
+        header('Location: ../panel/instr/index.php');
+    } elseif (isset($_POST['okbtnforfile'])) { // new file
+        $okbtnforfile   = htmlspecialchars($_POST['okbtnforfile']);
+        $filename       = htmlspecialchars($_POST['filename']);
+        $rootdir        = htmlspecialchars($_POST['rootdir']);
+        
+        $id             = substr($okbtnforfile, 2);
+        $mode           = substr($okbtnforfile, 0, 2);
+        set_file($pdo, $id, $mode, $filename, $rootdir);
+        header('Location: ../panel/instr/index.php');
     }
 ?>

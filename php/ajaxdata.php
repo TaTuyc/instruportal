@@ -16,7 +16,7 @@
                 echo get_settings_list($pdo);
                 break;
             case 'get_conf_tree':
-                echo get_conf_tree($pdo, $_POST['ID_conf']);
+                echo get_conf_tree($pdo, htmlspecialchars($_POST['ID_conf']));
                 break;
             default:
                 echo null;
@@ -26,13 +26,13 @@
     } elseif (isset($_POST['action'])) {
         switch($_POST['action']) {
             case 'delete_users':
-                echo delete_users($pdo, $_POST['users']);
+                echo delete_users($pdo, htmlspecialchars($_POST['users']));
                 break;
             case 'update_users':
-                echo update_users($pdo, $_POST['users'], $_POST['pws']);
+                echo update_users($pdo, htmlspecialchars($_POST['users']), htmlspecialchars($_POST['pws']));
                 break;
             case 'update_settings':
-                echo update_settings($pdo, $_POST['settings']);
+                echo update_settings($pdo, htmlspecialchars($_POST['settings']));
                 break;
             case 'reset_settings':
                 echo reset_settings($pdo);
