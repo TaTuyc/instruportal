@@ -85,6 +85,11 @@
         return $arr;
     }
     
+    // Получить текущую дату
+    function get_date() {
+        return date("Y-m-d H:i:s", time());
+    }
+    
     // --------------------------------------------------------------------------------------------------------
     // Функции для работы с БД
     // --------------------------------------------------------------------------------------------------------
@@ -358,7 +363,7 @@
     function set_file($pdo, $id, $mode, $file_name, $conf_id) {
         switch($mode) {
             case 'ef':
-                $time   = date("Y-m-d H:i:s", time());
+                $time   = get_date();
                 $sql    = "UPDATE Instruction SET ins_name = '$file_name', ins_date = '$time' WHERE ID_ins = $id";
                 
                 try {
@@ -386,7 +391,7 @@
                 
                 break;
             case 'nf':
-                $time   = date("Y-m-d H:i:s", time());
+                $time   = get_date;
                 $sql    = "INSERT INTO Instruction (ID_ins, ins_name, ID_fol, ins_date, ID_user_editor, ID_conf)
                     VALUES (NULL, '$file_name', $id, '$time', NULL, $conf_id)";
                 try {
@@ -415,6 +420,15 @@
                 
                 break;
         }
+    }
+    
+    // Запись сообщения об ошибке (неточности в инструкции)
+    function set_feedback($pdo, $conf_id, $ins_id, $feedback) {
+        $time   = get_date();
+        $sql    = "INSERT INTO Feedback (ID_fb, ID_ins, ID_user_name, date, data, fixed)
+            VALUES (NULL, $ins_id, NULL, '$time', '$feedback', 0)";
+        $result = $pdo->query($sql);
+        print json_encode('');
     }
     
     // --------------------------------------------------------------------------------------------------------

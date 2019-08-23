@@ -34,10 +34,10 @@ if (isset($_SESSION['instruportal_user'])) {
                     case 'dir':
                         newNode =
                             `<a href="#" onclick="showHide('c` + id +`');">` + name + `</a>
-                                <img id="ed` + id + `" src="../../img/pendir.png" class="img-ico" name="` + name + `">
-                                <img id="nd` + id + `" src="../../img/plusdir.png" class="img-ico" name="` + name + `">
-                                <img id="dd` + id + `" src="../../img/del.png" class="img-ico" name="` + name + `">
-                                |<img id="nf` + id + `" src="../../img/plusfile.png" class="img-ico" name="` + name + `">
+                                <img id="ed` + id + `" src="../../img/pendir.png" class="img-ico" name="` + name + `" title="Переименовать папку">
+                                <img id="nd` + id + `" src="../../img/plusdir.png" class="img-ico" name="` + name + `" title="Создать вложенную папку">
+                                <img id="dd` + id + `" src="../../img/del.png" class="img-ico" name="` + name + `" title="Удалить папку">
+                                |<img id="nf` + id + `" src="../../img/plusfile.png" class="img-ico" name="` + name + `" title="Создать вложенную инструкцию">
                             <ul id="c` + id + `" style="display: ` + display + `" name="` + name + `"></ul><br>`;
                         parent.insertAdjacentHTML("beforeend", newNode);
                         
@@ -50,8 +50,8 @@ if (isset($_SESSION['instruportal_user'])) {
                     case 'file':
                         newNode =
                             `<li id="li` + id + `">` + name + `
-                                <img id="ef` + id + `" src="../../img/penfile.png" class="img-ico" name="` + name + `">
-                                <img id="df` + id + `" src="../../img/del.png" class="img-ico" name="` + name + `">
+                                <img id="ef` + id + `" src="../../img/penfile.png" class="img-ico" name="` + name + `" title="Переименовать инструкцию, прикрепить файлы">
+                                <img id="df` + id + `" src="../../img/del.png" class="img-ico" name="` + name + `" title="Удалить инструкцию вместе с её файлами">
                             </li>`;
                         parent.insertAdjacentHTML("beforeend", newNode);
                         break;
@@ -196,7 +196,7 @@ if (isset($_SESSION['instruportal_user'])) {
                                 <p id="dlabel" class="text-char-larger">Создание папки</p>
                                 <input id="fullpathfordir" type="text" class="fat-elem fat-border" value="/" readonly="" title="Полный путь к родительской папке">
                                 <input id="rootdirfordir" type="hidden" name="rootdir" value="">
-                                <input id="dirname" type="text" class="fat-elem fat-border" name="dirname" placeholder="Имя папки" required="" maxlength="535">
+                                <input id="dirname" type="text" class="fat-elem fat-border" name="dirname" placeholder="Название папки" required="" maxlength="535" title="Название папки">
                                 <button id="okbtnfordir" type="submit" class="btn confirm-btn ok-btn small-width more-padding" name="okbtnfordir" value="">ОК</button>
                             </form>
                             <!-- Форма создания инструкции -->
@@ -204,7 +204,7 @@ if (isset($_SESSION['instruportal_user'])) {
                                 <p id="flabel" class="text-char-larger">Создание инструкции</p>
                                 <input id="fullpathforfile" type="text" class="fat-elem fat-border" value="/" readonly="" title="Полный путь к родительской папке">
                                 <input id="rootdirforfile" type="hidden" name="rootdir" value="">
-                                <input id="filename" type="text" class="fat-elem fat-border" name="filename" placeholder="Имя инструкции" required="" maxlength="535">
+                                <input id="filename" type="text" class="fat-elem fat-border" name="filename" placeholder="Название инструкции" required="" maxlength="535" title="Название инструкции">
                                 <p class="text-char-middle">Оригинал (doc/docx)</p>
                                 <input type="file" class="fat-elem" name="docoriginal">
                                 <p class="text-char-middle">Файл для чтения (pdf)</p>

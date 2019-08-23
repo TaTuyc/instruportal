@@ -37,6 +37,9 @@
             case 'reset_settings':
                 echo reset_settings($pdo);
                 break;
+            case 'set_feedback':
+                echo set_feedback($pdo, htmlspecialchars($_POST['ID_conf']), htmlspecialchars($_POST['ID_ins']), htmlspecialchars($_POST['feedback']));
+                break;
             default:
                 break;
         }
