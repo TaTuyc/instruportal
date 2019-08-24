@@ -423,12 +423,36 @@
     }
     
     // Запись сообщения об ошибке (неточности в инструкции)
-    function set_feedback($pdo, $conf_id, $ins_id, $feedback) {
+    function set_feedback($pdo, $ins_id, $feedback) {
         $time   = get_date();
         $sql    = "INSERT INTO Feedback (ID_fb, ID_ins, ID_user_name, date, data, fixed)
             VALUES (NULL, $ins_id, NULL, '$time', '$feedback', 0)";
         $result = $pdo->query($sql);
         print json_encode('');
+    }
+    
+    // Получение списка доступных конфигураций
+    function get_conf_list($pdo) {
+        $sql = "SELECT ID_conf, conf_name FROM Configuration";
+        $result = $pdo->query($sql);
+        $result_arr = [];
+        foreach($result as $row) {
+            $result_arr[] = array(
+                'id'    => $row['ID_conf'],
+                'name'  => $row['conf_name']
+            );
+        }
+        print json_encode($result_arr);
+    }
+    
+    // Получение id конфигурации по id инструкции
+    function get_conf_id_by_ins_id($ins_id) {
+        $pdo    = connect_db();
+        $sql    = "SELECT ID_conf FROM Instruction WHERE ID_ins = $ins_id LIMIT 1";
+        $result = $pdo->query($sql);
+        foreach($result as $row) {
+            return $row['ID_conf'];
+        }
     }
     
     // --------------------------------------------------------------------------------------------------------

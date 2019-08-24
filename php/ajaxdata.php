@@ -18,6 +18,9 @@
             case 'get_conf_tree':
                 echo get_conf_tree($pdo, htmlspecialchars($_POST['ID_conf']));
                 break;
+            case 'get_conf_list':
+                echo get_conf_list($pdo);
+                break;
             default:
                 echo null;
                 break;
@@ -38,7 +41,7 @@
                 echo reset_settings($pdo);
                 break;
             case 'set_feedback':
-                echo set_feedback($pdo, htmlspecialchars($_POST['ID_conf']), htmlspecialchars($_POST['ID_ins']), htmlspecialchars($_POST['feedback']));
+                echo set_feedback($pdo, htmlspecialchars($_POST['ID_ins']), htmlspecialchars($_POST['feedback']));
                 break;
             default:
                 break;

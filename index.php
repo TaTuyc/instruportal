@@ -30,19 +30,13 @@
                         alert('Слишком длинное сообщение (больше ' + const_feedback_length + ' символов). Пожалуйста, введите ещё раз.');
                         sendFeedback(usranswer.substring(0, 535));
                     } else {
-                        // TO DO здесь брать переменную и отправлять на запись
-                        console.log(usranswer);
                         insId = document.getElementById('insid').value;
-                        console.log(insId);
-                        
-                        var idConf = 1;
                         var x = $.ajax({
                             type: 'POST',
                             url: './php/ajaxdata.php',
                             async: false,
                             data: {
                                 action:     'set_feedback',
-                                ID_conf:    idConf,
                                 ID_ins:     insId,
                                 feedback:   usranswer},
                             dataType: "json",
@@ -98,8 +92,7 @@
                 }
             }
             
-            function getConfTree(is_ie) {
-                var idConf = 1;
+            function getConfTree(idConf, is_ie) {
                 var x = $.ajax({
                     type: 'POST',
                     url: './php/ajaxdata.php',
@@ -117,6 +110,34 @@
                     }
                 }).responseText;
             }
+            
+            // Получение списка доступных конфигураций
+            function getConfList() {
+                var x = $.ajax({
+                    type: 'POST',
+                    url: './php/ajaxdata.php',
+                    async: false,
+                    data: {
+                        fill: 'get_conf_list'},
+                    dataType: "json",
+                    success: function(data) {
+                        var parent  = document.getElementById('confisemptyselect');
+                        var newNode = '';
+                        data.forEach(function(element) {
+                            newNode = '<option value="' + element.id + '">' + element.name;
+                            parent.insertAdjacentHTML("beforeend", newNode);
+                        });
+                        showElem('confisempty');
+                    }
+                }).responseText;
+            }
+            
+            // Определение конфигурации, разворачивание её дерева
+            function setConfAndGetConfTree() {
+                var confId = document.getElementById('confisemptyselect').value;
+                getConfTree(confId, document.getElementById('isie').value);
+                hideElem('confisempty');
+            }
         </script>
     </head>
     
@@ -132,12 +153,10 @@
                         <td id="conftree" style="width: 30%; padding-right: 1rem !important">
                             <!-- Блок выбора конфигурации из списка существующих -->
                             <div id="confisempty" style="display: none">
-                                <p class="warning-info">Конфигурация не указана!<br>Выберите название из списка:</p>
-                                <select class="text-char-middle">
-                                    <option value="">АСРН-2
-                                    <option value="">АСУСЭиРП
+                                <p class="warning-info">Конфигурация не определена!<br>Выберите из списка:</p>
+                                <select id="confisemptyselect" class="text-char-middle">
                                 </select>
-                                <button class="btn confirm-btn ok-btn">ОК</button>
+                                <button class="btn confirm-btn ok-btn medium-width" onclick="setConfAndGetConfTree();">ОК</button>
                             </div>
                             
                             <input id="insid" type="hidden" value="<?php
@@ -145,10 +164,18 @@
                                     echo htmlspecialchars($_GET['id']);
                                 }
                             ?>">
+                            <input id="isie" type="hidden" value="<?php
+                                $is_ie = strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'rv:11:0') !== false;
+                                if ($is_ie) {
+                                    echo 'true';
+                                } else {
+                                    echo 'false';
+                                }
+                            ?>">
                         </td>
                         
                         <td>
-                            <p id="ins_header" class="text-char-larger text-center text-add-padding">Как писать дипломную работу, чтобы всем понравилось?</p>
+                            <p id="ins_header" class="text-char-larger text-center text-add-padding"></p>
                             <iframe id="ins_content" src="./binarydata.php<?php
                                 if (isset($_GET['id'])) {
                                     $id = htmlspecialchars($_GET['id']);
@@ -173,22 +200,30 @@
         </div>
         <script type="text/javascript">
             setByConst();
-            getConfTree(<?php
-                if (isset($is_ie)) {
-                    if ($is_ie) {
-                        echo 'true';
+            <?php
+                if (isset($_GET['id'])) {
+                    $ins_id     = htmlspecialchars($_GET['id']);
+                    $conf_id    = get_conf_id_by_ins_id($ins_id);
+                    echo 'getConfTree(' . $conf_id . ', ';
+                    if (isset($is_ie)) {
+                        if ($is_ie) {
+                            echo 'true';
+                        } else {
+                            echo 'false';
+                        }
                     } else {
-                        echo 'false';
+                        $is_ie = strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'rv:11:0') !== false;
+                        if ($is_ie) {
+                            echo 'true';
+                        } else {
+                            echo 'false';
+                        }
                     }
+                    echo ');';
                 } else {
-                    $is_ie = strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'rv:11:0') !== false;
-                    if ($is_ie) {
-                        echo 'true';
-                    } else {
-                        echo 'false';
-                    }
+                    echo 'getConfList();';
                 }
-            ?>);
+            ?>
         </script>
     </body>
 </html>
