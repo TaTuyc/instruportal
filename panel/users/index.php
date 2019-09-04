@@ -37,7 +37,7 @@ if (isset($_SESSION['instruportal_user'])) {
                 <button type="button" class="btn feedback-btn report-btn" name="addusers"       onclick="showElem('newuser');"          title="Создание учётной записи">
                     Создать
                 </button>
-                <button type="button" class="btn feedback-btn report-btn" name="saveusers"      onclick="getPWUpdateConfirmation();"    title="Сохранить внесённые изменения">
+                <button type="button" class="btn feedback-btn report-btn" name="saveusers"      onclick="getPWUpdateConfirmation();"    title="Обновить пароли отмеченных пользователей">
                     Обновить пароли
                 </button>
                 <button type="button" class="btn feedback-btn report-btn" name="deleteusers"    onclick="getDeleteConfirmation();"      title="Удалить выбранные учётные записи">

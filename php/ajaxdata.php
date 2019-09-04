@@ -29,13 +29,13 @@
     } elseif (isset($_POST['action'])) {
         switch($_POST['action']) {
             case 'delete_users':
-                echo delete_users($pdo, htmlspecialchars($_POST['users']));
+                echo delete_users($pdo, $_POST['users']);
                 break;
             case 'update_users':
-                echo update_users($pdo, htmlspecialchars($_POST['users']), htmlspecialchars($_POST['pws']));
+                echo update_users($pdo, $_POST['users'], $_POST['pws']);
                 break;
             case 'update_settings':
-                echo update_settings($pdo, htmlspecialchars($_POST['settings']));
+                echo update_settings($pdo, $_POST['settings']);
                 break;
             case 'reset_settings':
                 echo reset_settings($pdo);

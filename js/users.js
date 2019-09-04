@@ -6,7 +6,7 @@ function getPWArray(arr) {
     return result;
 }
 function getPWUpdateConfirmation() {
-    var answer = confirm("Обновить пароли?\nОтменить это действие будет невозможно.");
+    var answer = confirm("Обновить пароли отмеченных пользователей?\nОтменить это действие будет невозможно.");
     if (answer) {
         updatingUsers   = getMarkedElements('marks');
         passwords       = getPWArray(updatingUsers);
