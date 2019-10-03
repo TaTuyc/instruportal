@@ -156,8 +156,28 @@ if (isset($_SESSION['instruportal_user'])) {
             function getDeleteConfirmation(id, type) {
                 var answer = confirm("Удалить элемент?");
                 if (answer) {
-                    console.log(id + ' --- ' + type);
-                    // TO DO удалить
+                    var x = $.ajax({
+                        type: 'POST',
+                        url: '../../php/ajaxdata.php',
+                        async: false,
+                        data: {
+                            action:    'delete_' + type,
+                            id: id},
+                        dataType: "json",
+                        success: function(data) {
+                            document.location.reload(true);
+                        }
+                    }).responseText;
+                }
+            }
+            
+            function getReadMe() {
+                if (document.getElementById('readme').style.display == 'none') {
+                    hideElem('newfile')
+                    showElem('readme');
+                } else {
+                    hideElem('readme');
+                    showElem('newfile');
                 }
             }
         </script>
@@ -185,6 +205,7 @@ if (isset($_SESSION['instruportal_user'])) {
                         </td>
                         
                         <td>
+                            <button type="button" class="btn feedback-btn" style="float: left" onclick="getReadMe();" title="Нажмите, чтобы посмотреть/скрыть справку">Справка</button>
                             <a href="../advancedinstr/index.php" style="width: 100%">
                                 <button type="button" class="btn feedback-btn" style="float: right" title="Изменить родителя для инструкции или папки">Дополнительные действия</button>
                             </a>
@@ -213,6 +234,28 @@ if (isset($_SESSION['instruportal_user'])) {
                                 <input type="file" class="fat-elem" name="docreadonlyie">
                                 <button id="okbtnforfile" type="submit" class="btn confirm-btn ok-btn small-width more-padding" name="okbtnforfile" value="">ОК</button>
                             </form>
+                            <div id="readme" style="display: none">
+                                <p>Данный раздел предназначен для администрирования дерева с доступными инструкциями, которое увидит пользователь портала.
+                                Дерево состоит из корневой папки, дочерних папок и инструкций. К каждой инструкции может быть прикреплено 3 файла:
+                                <ul>
+                                    <li>оригинал (для скачивания администратором, последующей модификации и загрузки обратно на портал);</li>
+                                    <li>файл для чтения в .pdf (для браузеров, в которых есть средство просмотра файлов такого типа);</li>
+                                    <li>файл для чтения в .mhtml (для Internet Explorer, где, как предполагается, плагинов не установлено).</li>
+                                </ul>
+                                <p>Для папок доступны следующие операции:
+                                <ul>
+                                    <li>переименование;</li>
+                                    <li>создание дочерней папки;</li>
+                                    <li>удаление папки со всем её содержимым;</li>
+                                    <li>создание инструкции в этой папке.</li>
+                                </ul>
+                                <p>Для инструкций доступно:
+                                <ul>
+                                    <li>переименование;</li>
+                                    <li>перезагрузка прикреплённых файлов: если файл прикреплён, он заменяется, иначе остаётся прежним;</li>
+                                    <li>удаление инструкции со всеми прикреплёнными файлами.</li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

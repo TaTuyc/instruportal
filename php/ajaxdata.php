@@ -43,6 +43,11 @@
             case 'set_feedback':
                 echo set_feedback($pdo, htmlspecialchars($_POST['ID_ins']), htmlspecialchars($_POST['feedback']));
                 break;
+            case 'delete_dir':
+                echo delete_ins_dir($pdo, 'dir', htmlspecialchars($_POST['id']));
+                break;
+            case 'delete_file':
+                echo delete_ins_dir($pdo, 'file', htmlspecialchars($_POST['id']));
             default:
                 break;
         }

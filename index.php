@@ -60,6 +60,8 @@
                 // Установка заголовка инструкции на странице
                 var newHeader = document.getElementById('a' + id).innerHTML;
                 document.getElementById('ins_header').innerHTML = newHeader;
+                // Разблокировка кнопки "Сообщить об ошибке"
+                showElem('feedbackbtn');
             }
             
             function unwrapElem(element, parentId, display, is_ie) {
@@ -128,6 +130,7 @@
                             parent.insertAdjacentHTML("beforeend", newNode);
                         });
                         showElem('confisempty');
+                        hideElem('feedbackbtn');
                     }
                 }).responseText;
             }

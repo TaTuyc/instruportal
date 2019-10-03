@@ -140,6 +140,21 @@
         }
     }
     
+    function get_user_id($pdo, $login) {
+        $sql = "SELECT ID_user
+            FROM User 
+            WHERE login = ? LIMIT 1";
+        $result = $pdo->prepare($sql);
+        $result->execute(array($login));
+        if ($result->rowCount() == 0) {
+            return null;
+        } else {
+            foreach($result as $row) {
+                return $row['ID_user'];
+            }
+        }
+    }
+    
     // Создание учётной записи пользователя
     function create_user($pdo, $login, $pw) {
         $sql    = "INSERT INTO User (ID_user, login, password) VALUES (NULL, ?, ?)";
@@ -391,7 +406,7 @@
                 
                 break;
             case 'nf':
-                $time   = get_date;
+                $time   = get_date();
                 $sql    = "INSERT INTO Instruction (ID_ins, ins_name, ID_fol, ins_date, ID_user_editor, ID_conf)
                     VALUES (NULL, '$file_name', $id, '$time', NULL, $conf_id)";
                 try {
@@ -455,6 +470,64 @@
         }
     }
     
+    // Запись в журнал регистрации; операции с папками и инструкциями
+    function write_log_ins_dir($pdo, $id, $mode) {
+        // TO DO заготовка на разворачивание события по его символьному коду
+        /*switch($mode) {
+            case 'nd':
+                $mode_in_string = 'Создание папки, id родителя: ';
+                break;
+            case 'nf':
+                $mode_in_string = 'Создание инструкции, id родителя: ';
+                break;
+            case 'ed':
+                $mode_in_string = 'Переименование папки, id: ';
+                break;
+            case 'ef':
+                $mode_in_string = 'Редактирование инструкции (переименование / перезагрузка файлов), id: ';
+                break;
+            case 'dd':
+                $mode_in_string = 'Удаление папки, id: ';
+                break;
+            case 'df':
+                $mode_in_string = 'Удаление инструкции, id: ';
+                break;
+            default:
+                $mode_in_string = 'Неизвестное действие, id: ';
+                break;
+        }*/
+        $time = get_date();
+        $login = htmlspecialchars($_SESSION['instruportal_user']);
+        $user_id = get_user_id($pdo, htmlspecialchars($login));
+        if ($user_id == null) {
+            $user_id = 'NULL';
+        }
+        $sql = "INSERT INTO Logjournal (ID_log, log_date, log_name, ID_user)
+            VALUES (NULL, '$time', '$mode" . "$id', $user_id)";
+        $result = $pdo->query($sql);
+    }
+    
+    // Удаление папки или инструкции (полностью)
+    function delete_ins_dir($pdo, $type, $id) {
+        switch($type) {
+            case 'dir':
+                $table          = 'Folder';
+                $id_col_name    = 'ID_fol';
+                break;
+            case 'file':
+                $table          = 'Instruction';
+                $id_col_name    = 'ID_ins';
+                break;
+            default:
+                exit;
+        }
+        $sql = "DELETE FROM $table WHERE $id_col_name = $id LIMIT 1";
+        $result = $pdo->query($sql);
+        
+        $mode = $type == 'dir' ? 'dd' : 'df';
+        write_log_ins_dir($pdo, $id, $mode);
+        print json_encode('');
+    }
     // --------------------------------------------------------------------------------------------------------
     // Ветви обработчиков форм
     // --------------------------------------------------------------------------------------------------------
@@ -469,6 +542,7 @@
         $id             = substr($okbtnfordir, 2);
         $mode           = substr($okbtnfordir, 0, 2);
         set_dir($pdo, $id, $mode, $dirname);
+        write_log_ins_dir($pdo, $id, $mode);
         header('Location: ../panel/instr/index.php');
     } elseif (isset($_POST['okbtnforfile'])) { // new file
         $okbtnforfile   = htmlspecialchars($_POST['okbtnforfile']);
@@ -478,6 +552,7 @@
         $id             = substr($okbtnforfile, 2);
         $mode           = substr($okbtnforfile, 0, 2);
         set_file($pdo, $id, $mode, $filename, $rootdir);
+        write_log_ins_dir($pdo, $id, $mode);
         header('Location: ../panel/instr/index.php');
     }
 ?>
