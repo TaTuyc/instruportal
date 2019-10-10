@@ -90,6 +90,12 @@
         return date("Y-m-d H:i:s", time());
     }
     
+    // Получить дату в формате ДД-ММ-ГГ ЧЧ-ММ-СС
+    function get_date_normal($date_string) {
+        $date = strtotime($date_string);
+        return date("H:i:s d-m-Y", $date);
+    }
+    
     // --------------------------------------------------------------------------------------------------------
     // Функции для работы с БД
     // --------------------------------------------------------------------------------------------------------
@@ -472,8 +478,22 @@
     
     // Запись в журнал регистрации; операции с папками и инструкциями
     function write_log_ins_dir($pdo, $id, $mode) {
-        // TO DO заготовка на разворачивание события по его символьному коду
-        /*switch($mode) {
+        $time = get_date();
+        $login = htmlspecialchars($_SESSION['instruportal_user']);
+        $user_id = get_user_id($pdo, htmlspecialchars($login));
+        if ($user_id == null) {
+            $user_id = 'NULL';
+        }
+        $sql = "INSERT INTO Logjournal (ID_log, log_date, log_name, ID_user)
+            VALUES (NULL, '$time', '$mode" . "$id;', $user_id)";
+        $result = $pdo->query($sql);
+    }
+    
+    // Расшифровка события по его коду
+    function unwrap_event($event) {
+        $event_code = substr($event, 0, 2);
+        $id         = substr($event, 2, -1);
+        switch($event_code) {
             case 'nd':
                 $mode_in_string = 'Создание папки, id родителя: ';
                 break;
@@ -495,16 +515,62 @@
             default:
                 $mode_in_string = 'Неизвестное действие, id: ';
                 break;
-        }*/
-        $time = get_date();
-        $login = htmlspecialchars($_SESSION['instruportal_user']);
-        $user_id = get_user_id($pdo, htmlspecialchars($login));
-        if ($user_id == null) {
-            $user_id = 'NULL';
         }
-        $sql = "INSERT INTO Logjournal (ID_log, log_date, log_name, ID_user)
-            VALUES (NULL, '$time', '$mode" . "$id', $user_id)";
-        $result = $pdo->query($sql);
+        return $mode_in_string . $id;
+    }
+    
+    /* Выборка из журнала регистрации;
+     * если оба параметра пусты, сформируется первая страница журнала;
+     * если есть параметр id (id инструкции), сформируется выборка из журнала, где будут все записи, связанные с этой инструкцией,
+     * если есть параметр page, сформируется выбранная страница журнала.
+     */
+    function get_logj($pdo, $id, $page) {
+        // Массив имён пользователей
+        $users_buff = [];
+        $sql        = "SELECT ID_user, login FROM User";
+        $result     = $pdo->query($sql);
+        $names      = [];
+        foreach($result as $row) {
+            $names[$row['ID_user']] = $row['login'];
+        }
+        
+        if ($id != null) {
+            $sql        = "SELECT * FROM Logjournal WHERE LOCATE('ef$id;', log_name)
+                            UNION
+                            SELECT * FROM Logjournal WHERE LOCATE('df$id;', log_name)";
+            $result     = $pdo->query($sql);
+            $result_arr = [];
+            $counter    = 1;
+            foreach($result as $row) {
+                $result_arr[] = array(
+                    'n'     => $counter,
+                    'date'  => get_date_normal($row['log_date']),
+                    'event' => unwrap_event($row['log_name']),
+                    'user'  => $names[$row['ID_user']]
+                );
+                $counter++;
+            }
+            print json_encode($result_arr);
+        } else {
+            $portion_size   = 5;
+            $min_cnt        = ($page - 1) * $portion_size;
+            
+            $sql        = "SELECT * FROM Logjournal LIMIT $min_cnt, $portion_size";
+            $result     = $pdo->query($sql);
+            $result_arr = [];
+            // Инициализация номера следующей строки
+            $counter    = ($page - 1) * $portion_size + 1;
+            foreach($result as $row) {
+                $result_arr[] = array(
+                    'n'     => $counter,
+                    'date'  => get_date_normal($row['log_date']),
+                    'event' => unwrap_event($row['log_name']),
+                    'user'  => $names[$row['ID_user']]
+                );
+                $counter++;
+            }
+            print json_encode($result_arr);
+        }
     }
     
     // Удаление папки или инструкции (полностью)
@@ -528,6 +594,22 @@
         write_log_ins_dir($pdo, $id, $mode);
         print json_encode('');
     }
+    
+    // Получение списка всех инструкций (для нахождения ответственного за последние изменения)
+    function get_ins_list($pdo) {
+        $sql = "SELECT ID_ins, ins_name FROM Instruction";
+        $result = $pdo->query($sql);
+        
+        $result_arr = [];
+        foreach($result as $row) {
+            $result_arr[] = array(
+                'id'    => $row['ID_ins'],
+                'name'  => $row['ins_name']
+            );
+        }
+        print json_encode($result_arr);
+    }
+    
     // --------------------------------------------------------------------------------------------------------
     // Ветви обработчиков форм
     // --------------------------------------------------------------------------------------------------------

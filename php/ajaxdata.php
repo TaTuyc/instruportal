@@ -21,6 +21,12 @@
             case 'get_conf_list':
                 echo get_conf_list($pdo);
                 break;
+            case 'get_logj':
+                echo get_logj($pdo, htmlspecialchars($_POST['id']), htmlspecialchars($_POST['page']));
+                break;
+            case 'get_ins_list':
+                echo get_ins_list($pdo);
+                break;
             default:
                 echo null;
                 break;

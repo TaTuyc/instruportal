@@ -139,7 +139,7 @@ if (isset($_SESSION['instruportal_user'])) {
             }
             
             function setContent(id, type) {
-                // TO DO заполнить форму данными из БД с этим id, элемент - этого типа
+                // TO DO ++скачать оригинал
                 
                 switch(type) {
                     case 'dir':
@@ -193,7 +193,6 @@ if (isset($_SESSION['instruportal_user'])) {
                 <tbody style="text-align: justify; vertical-align: top">
                     <tr>
                         <td id="conftree" style="width: 60%">
-                            <!-- TO DO Обработка, конфигурация не указана -->
                             <div id="confisempty" style="display: none">
                                 <p class="warning-info">Конфигурация не указана!<br>Выберите название из списка:</p>
                                 <select class="text-char-middle">
