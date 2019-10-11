@@ -1,10 +1,16 @@
 <?php
 
-    /* Константы
-     *
+    /*
+     * Константы
      */
     // Размер порции при порционной выдаче результатов (записей)    
     define("PORTION_SIZE", 10);
+    // Текст для обозначения отсутствующих данных
+    define("DELETED_DATA", '[нет данных]');
+    // Статус открытого обращения пользователя
+    define("OPENED_APPEAL", 'Не решено');
+    // Статус закрытого обращения пользователя
+    define("CLOSED_APPEAL", 'Решено');
     
     // Проверка расширения имени файла; в дерево файловой системы в web-интерфейсе включаются только каталоги и html-файлы
     function check_extension($filename) {
@@ -496,34 +502,58 @@
         $result = $pdo->query($sql);
     }
     
+    // Получение ассоциативного массива инструкций: id -> название
+    function get_instr_arr($pdo) {
+        $instr      = [];
+        $sql        = "SELECT ID_ins, ins_name FROM Instruction";
+        $result     = $pdo->query($sql);
+        foreach($result as $row) {
+            $instr[$row['ID_ins']] = $row['ins_name'];
+        }
+        return $instr;
+    }
+    
+    // Получение ассоциативного массива папок: id -> название
+    function get_fol_arr($pdo) {
+        $fol        = [];
+        $sql        = "SELECT ID_fol, fol_name FROM Folder";
+        $result     = $pdo->query($sql);
+        foreach($result as $row) {
+            $fol[$row['ID_fol']] = $row['fol_name'];
+        }
+        return $fol;
+    }
+    
     // Расшифровка события по его коду
-    function unwrap_event($event) {
+    function unwrap_event($event, &$instr_arr, &$fol_arr) {
         $event_code = substr($event, 0, 2);
         $id         = substr($event, 2, -1);
+        $instr      = isset($instr_arr[$id])    ? $instr_arr[$id]   : DELETED_DATA;
+        $fol        = isset($fol_arr[$id])      ? $fol_arr[$id]     : DELETED_DATA;
         switch($event_code) {
             case 'nd':
-                $mode_in_string = 'Создание папки, id родителя: ';
+                $mode_in_string = 'Создание папки, родитель: ' . $fol;
                 break;
             case 'nf':
-                $mode_in_string = 'Создание инструкции, id родителя: ';
+                $mode_in_string = 'Создание инструкции, родитель: ' . $fol;
                 break;
             case 'ed':
-                $mode_in_string = 'Переименование папки, id: ';
+                $mode_in_string = 'Переименование папки: ' . $fol;
                 break;
             case 'ef':
-                $mode_in_string = 'Редактирование инструкции (переименование / перезагрузка файлов), id: ';
+                $mode_in_string = 'Редактирование инструкции (переименование / перезагрузка файлов): ' . $instr;
                 break;
             case 'dd':
-                $mode_in_string = 'Удаление папки, id: ';
+                $mode_in_string = 'Удаление папки: ' . $fol;
                 break;
             case 'df':
-                $mode_in_string = 'Удаление инструкции, id: ';
+                $mode_in_string = 'Удаление инструкции: ' . $instr;
                 break;
             default:
-                $mode_in_string = 'Неизвестное действие, id: ';
+                $mode_in_string = 'Неизвестное действие';
                 break;
         }
-        return $mode_in_string . $id;
+        return $mode_in_string;
     }
     
     /* Выборка из журнала регистрации;
@@ -533,13 +563,18 @@
      */
     function get_logj($pdo, $id, $page) {
         // Массив имён пользователей
-        $users_buff = [];
+        $names      = [];
         $sql        = "SELECT ID_user, login FROM User";
         $result     = $pdo->query($sql);
-        $names      = [];
         foreach($result as $row) {
             $names[$row['ID_user']] = $row['login'];
         }
+        
+        // Массив названий инструкций
+        $instr  = get_instr_arr($pdo);
+        
+        // Массив названий папок
+        $fol    = get_fol_arr($pdo);
         
         if ($id != null) {
             $sql        = "SELECT * FROM Logjournal WHERE LOCATE('ef$id;', log_name)
@@ -552,7 +587,7 @@
                 $result_arr[] = array(
                     'n'     => $counter,
                     'date'  => get_date_normal($row['log_date']),
-                    'event' => unwrap_event($row['log_name']),
+                    'event' => unwrap_event($row['log_name'], $instr, $fol),
                     'user'  => $names[$row['ID_user']]
                 );
                 $counter++;
@@ -570,7 +605,7 @@
                 $result_arr[] = array(
                     'n'     => $counter,
                     'date'  => get_date_normal($row['log_date']),
-                    'event' => unwrap_event($row['log_name']),
+                    'event' => unwrap_event($row['log_name'], $instr, $fol),
                     'user'  => $names[$row['ID_user']]
                 );
                 $counter++;
@@ -612,6 +647,34 @@
                 'id'    => $row['ID_ins'],
                 'name'  => $row['ins_name']
             );
+        }
+        print json_encode($result_arr);
+    }
+    
+    // Получение списка всех сообщений [от пользователей] о неточностях в инструкциях
+    function get_fb_messages($pdo, $page) {
+        $min_cnt    = ($page - 1) * PORTION_SIZE;
+        
+        $sql        = "SELECT * FROM Feedback LIMIT $min_cnt, " . PORTION_SIZE;
+        $result     = $pdo->query($sql);
+        
+        // Массив названий инструкций
+        $instr  = get_instr_arr($pdo);
+        
+        $result_arr = [];
+        // Инициализация номера следующей строки
+        $counter    = ($page - 1) * PORTION_SIZE + 1;
+        foreach($result as $row) {
+            $result_arr[] = array(
+                'n'     => $counter,
+                'id'    => $row['ID_fb'],
+                'instr' => isset($instr[$row['ID_ins']]) ? $instr[$row['ID_ins']] : DELETED_DATA,
+                // TO DO реализовать прозрачную авторизацию, поле user_name
+                'date'  => get_date_normal($row['date']),
+                'data'  => $row['data'],
+                'status'=> $row['fixed'] == 0 ? OPENED_APPEAL : CLOSED_APPEAL
+            );
+            $counter++;
         }
         print json_encode($result_arr);
     }

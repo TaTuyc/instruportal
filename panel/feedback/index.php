@@ -16,6 +16,8 @@ if (isset($_SESSION['instruportal_user'])) {
         <link rel="stylesheet" href="../../css/bootstrap.css">
         <script type="text/javascript" src="../../js/const.js"></script>
         <script type="text/javascript" src="../../js/common.js"></script>
+        <script type="text/javascript" src="../../js/fbmessages.js"></script>
+        <script type="text/javascript" src="../../jquery/jquerymin.js"></script>
         <script type="text/javascript">
             function setByConst() {
                 document.getElementById('copyright').innerHTML = const_copyright;
@@ -43,72 +45,39 @@ if (isset($_SESSION['instruportal_user'])) {
                 draw_header(3);
             ?>
             
-            <form method="post" action="../../php/common.php">
-                <div class="text-center">
-                    <button type="button" class="btn feedback-btn report-btn" onclick="getChangeStatusConfirmation();" title="Пометить как исправленные / неисправленные">
-                        Сменить статус
-                    </button>
-                    <button type="button" class="btn feedback-btn report-btn" onclick="getDeleteConfirmation();" title="Удалить выбранные сообщения">
-                        Удалить
-                    </button>
-                </div>
-                
+            <div class="text-center">
+                <button type="button" class="btn feedback-btn report-btn" onclick="getChangeStatusConfirmation();" title="Пометить как исправленные / неисправленные">
+                    Сменить статус
+                </button>
+                <button type="button" class="btn feedback-btn report-btn" onclick="getDeleteConfirmation();" title="Удалить выбранные сообщения">
+                    Удалить
+                </button>
+            </div>
+            
+            <form id="allfbmform" method="post" action="../../php/common.php">
                 <table class="text-char-middle text-center" style="width: 100%; margin: 0.5rem">
-                    <tbody class="striped text-usual">
+                    <tbody>
                         <tr>
                             <th class="lowly-advanced">
-                                <button type="button" class="btn feedback-btn" title="Выделить всё / снять выделение" style="float: left" onclick="mark('marks', 'orientmark');">Все</button>
+                                <button id="markallbtn" type="button" class="btn feedback-btn" title="Выделить всё / снять выделение" style="float: left">Все</button>
                             </th>
                             <th>Инструкция</th>
                             <th>Пользователь</th>
                             <th>Дата сообщения</th>
+                            <th>Текст сообщения</th>
                             <th>Статус</th>
                         </tr>
-                        <tr>
-                            <td><input id="orientmark" type="checkbox" name="marks" value="1">1</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" name="marks" value="2">2</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" name="marks" value="3">3</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" name="marks" value="4">4</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" name="marks" value="5">5</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" name="marks" value="6">6</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                            <td>Данные</td>
-                        </tr>
+                    </tbody>
+                    <tbody id="allfbmtbody" class="striped text-usual">
                     </tbody>
                 </table>
             </form>
+            
+            <div class="text-center">
+                <button id="morebtn" class="btn confirm-btn ok-btn small-width more-padding" onclick="getMoreNotes();" value="null">
+                    Загрузить ещё
+                </button>
+            </div>
             
             <?php
                 draw_footer(3);
@@ -118,6 +87,9 @@ if (isset($_SESSION['instruportal_user'])) {
             setByConst();
             addLogoutBtn(3);
             setPageLabel("Сообщения о неточностях в инструкциях");
+            
+            // При загрузке страницы отобразить в таблице сообщений первую страницу результатов
+            getFBMessages(1);
         </script>
     </body>
 </html>

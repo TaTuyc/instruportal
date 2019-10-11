@@ -27,6 +27,9 @@
             case 'get_ins_list':
                 echo get_ins_list($pdo);
                 break;
+            case 'get_fb_messages':
+                echo get_fb_messages($pdo, htmlspecialchars($_POST['page']));
+                break;
             default:
                 echo null;
                 break;
