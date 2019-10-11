@@ -1,4 +1,11 @@
 <?php
+
+    /* Константы
+     *
+     */
+    // Размер порции при порционной выдаче результатов (записей)    
+    define("PORTION_SIZE", 10);
+    
     // Проверка расширения имени файла; в дерево файловой системы в web-интерфейсе включаются только каталоги и html-файлы
     function check_extension($filename) {
         if (substr($filename, -5) == '.html') {
@@ -552,14 +559,13 @@
             }
             print json_encode($result_arr);
         } else {
-            $portion_size   = 5;
-            $min_cnt        = ($page - 1) * $portion_size;
+            $min_cnt        = ($page - 1) * PORTION_SIZE;
             
-            $sql        = "SELECT * FROM Logjournal LIMIT $min_cnt, $portion_size";
+            $sql        = "SELECT * FROM Logjournal LIMIT $min_cnt, " . PORTION_SIZE;
             $result     = $pdo->query($sql);
             $result_arr = [];
             // Инициализация номера следующей строки
-            $counter    = ($page - 1) * $portion_size + 1;
+            $counter    = ($page - 1) * PORTION_SIZE + 1;
             foreach($result as $row) {
                 $result_arr[] = array(
                     'n'     => $counter,
