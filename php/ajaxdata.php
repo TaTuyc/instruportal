@@ -57,6 +57,12 @@
                 break;
             case 'delete_file':
                 echo delete_ins_dir($pdo, 'file', htmlspecialchars($_POST['id']));
+            case 'check_logj':
+                echo check_logj($pdo, htmlspecialchars($_POST['page']));
+                break;
+            case 'check_fbmessages':
+                echo check_fbmessages($pdo, htmlspecialchars($_POST['page']));
+                break;
             default:
                 break;
         }

@@ -679,6 +679,38 @@
         print json_encode($result_arr);
     }
     
+    // Проверка существования записей журнала логов для разрешения/ограничения дальнейшней прокрутки
+    function check_logj($pdo, $page) {
+        $min_cnt    = ($page - 1) * PORTION_SIZE;
+        
+        $sql        = "SELECT 1 FROM Logjournal LIMIT $min_cnt, " . PORTION_SIZE;
+        $result     = $pdo->query($sql);
+        
+        foreach($result as $row) {
+            print json_encode(true);
+            return;
+        }
+        
+        print json_encode(false);
+        return;
+    }
+    
+    // Проверка существования записей журнала сообщений о неточностях в инструкциях (Feedback) для разрешения/ограничения дальнейшней прокрутки
+    function check_fbmessages($pdo, $page) {
+        $min_cnt    = ($page - 1) * PORTION_SIZE;
+        
+        $sql        = "SELECT 1 FROM Feedback LIMIT $min_cnt, " . PORTION_SIZE;
+        $result     = $pdo->query($sql);
+        
+        foreach($result as $row) {
+            print json_encode(true);
+            return;
+        }
+        
+        print json_encode(false);
+        return;
+    }
+    
     // --------------------------------------------------------------------------------------------------------
     // Ветви обработчиков форм
     // --------------------------------------------------------------------------------------------------------

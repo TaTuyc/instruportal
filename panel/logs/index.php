@@ -90,6 +90,7 @@ if (isset($_SESSION['instruportal_user'])) {
                             });
                         }
                     }).responseText;
+                    checkMoreNotes();
                 }
             }
             function getMoreNotes() {
@@ -97,6 +98,23 @@ if (isset($_SESSION['instruportal_user'])) {
             }
             function resetPage() {
                 location = './index.php';
+            }
+            // Проверка существования следующих записей: если "Получать ещё" нечего, то скрыть соответствующую кнопку
+            function checkMoreNotes() {
+                var x = $.ajax({
+                    type: 'POST',
+                    url: '../../php/ajaxdata.php',
+                    async: false,
+                    data: {
+                        action:     'check_logj',
+                        page:       document.getElementById('morebtn').getAttribute('value')},
+                    dataType: "json",
+                    success: function(notesExist) {
+                        if (!notesExist) {
+                            hideElem('morebtn');
+                        }
+                    }
+                }).responseText;
             }
         </script>
     </head>

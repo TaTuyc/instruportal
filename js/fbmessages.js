@@ -41,9 +41,27 @@ function getFBMessages(page) {
                 </tr>`;
                 parent.insertAdjacentHTML("beforeend", newNode);
             });
+            checkMoreNotes();
         }
     }).responseText;
 }
 function getMoreNotes() {
     getFBMessages(document.getElementById('morebtn').getAttribute('value'));
+}
+// Проверка существования следующих записей: если "Получать ещё" нечего, то скрыть соответствующую кнопку
+function checkMoreNotes() {
+    var x = $.ajax({
+        type: 'POST',
+        url: '../../php/ajaxdata.php',
+        async: false,
+        data: {
+            action:     'check_fbmessages',
+            page:       document.getElementById('morebtn').getAttribute('value')},
+        dataType: "json",
+        success: function(notesExist) {
+            if (!notesExist) {
+                hideElem('morebtn');
+            }
+        }
+    }).responseText;
 }
