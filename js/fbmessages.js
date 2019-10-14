@@ -55,7 +55,7 @@ function checkMoreNotes() {
         url: '../../php/ajaxdata.php',
         async: false,
         data: {
-            action:     'check_fbmessages',
+            action:     'check_fb_messages',
             page:       document.getElementById('morebtn').getAttribute('value')},
         dataType: "json",
         success: function(notesExist) {
@@ -64,4 +64,48 @@ function checkMoreNotes() {
             }
         }
     }).responseText;
+}
+function getDeleteConfirmation() {
+    var answer = confirm("Удалить выбранные сообщения?\nОтменить это действие будет невозможно.");
+    if (answer) {
+        deletingFBMessages = getMarkedElements('marks');
+        
+        // Отправка на сервер для удаления
+        if (deletingFBMessages !== []) {
+            var x = $.ajax({
+                type: 'POST',
+                url: '../../php/ajaxdata.php',
+                async: false,
+                data: {
+                    action: 'delete_fb_messages',
+                    fbmes:  JSON.stringify(deletingFBMessages)},
+                dataType: "json",
+                success: function(data) {
+                    location.reload();
+                }
+            });
+        }
+    }
+}
+function getChangeStatusConfirmation() {
+    var answer = confirm("Сменить статус выбранных сообщений?");
+    if (answer) {
+        changingFBMessages = getMarkedElements('marks');
+        
+        // Отправка на сервер для изменения статуса
+        if (changingFBMessages !== []) {
+            var x = $.ajax({
+                type: 'POST',
+                url: '../../php/ajaxdata.php',
+                async: false,
+                data: {
+                    action: 'change_status_fb_messages',
+                    fbmes:  JSON.stringify(changingFBMessages)},
+                dataType: "json",
+                success: function(data) {
+                    location.reload();
+                }
+            });
+        }
+    }
 }

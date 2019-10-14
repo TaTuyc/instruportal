@@ -60,8 +60,14 @@
             case 'check_logj':
                 echo check_logj($pdo, htmlspecialchars($_POST['page']));
                 break;
-            case 'check_fbmessages':
-                echo check_fbmessages($pdo, htmlspecialchars($_POST['page']));
+            case 'check_fb_messages':
+                echo check_fb_messages($pdo, htmlspecialchars($_POST['page']));
+                break;
+            case 'delete_fb_messages':
+                echo delete_fb_messages($pdo, $_POST['fbmes']);
+                break;
+            case 'change_status_fb_messages':
+                echo change_status_fb_messages($pdo, $_POST['fbmes']);
                 break;
             default:
                 break;

@@ -205,7 +205,7 @@
     // Удаление учётных записей пользователей
     function delete_users($pdo, $users_json) {
         $users  = json_decode($users_json);
-        $sql    = "DELETE FROM User WHERE ID_user = ?";
+        $sql    = "DELETE FROM User WHERE ID_user = ? LIMIT 1";
         $result = $pdo->prepare($sql);
         
         foreach($users as $user) {
@@ -218,7 +218,7 @@
     function update_users($pdo, $users_json, $pws_json) {
         $users  = json_decode($users_json);
         $pws    = json_decode($pws_json);
-        $sql    = "UPDATE User SET password = ? WHERE ID_user = ?";
+        $sql    = "UPDATE User SET password = ? WHERE ID_user = ? LIMIT 1";
         $result = $pdo->prepare($sql);
         
         for ($i = 0, $l = count($users); $i < $l; $i++) {
@@ -250,7 +250,7 @@
     // Обновление значений настроек портала
     function update_settings($pdo, $settings_json) {
         $settings  = json_decode($settings_json);
-        $sql       = "UPDATE Setting SET set_value = ? WHERE ID_set = ?";
+        $sql       = "UPDATE Setting SET set_value = ? WHERE ID_set = ? LIMIT 1";
         $result    = $pdo->prepare($sql);
         
         foreach($settings as $setting) {
@@ -268,7 +268,7 @@
             FROM Setting";
         $result = $pdo->query($sql);
         
-        $sql_upd = "UPDATE Setting SET set_value = ? WHERE ID_set = ?";
+        $sql_upd = "UPDATE Setting SET set_value = ? WHERE ID_set = ? LIMIT 1";
         $result_upd = $pdo->prepare($sql_upd);
         foreach($result as $row) {
             $result_upd->execute(array(
@@ -381,7 +381,7 @@
     function set_dir($pdo, $id, $mode, $dir_name) {
         switch($mode) {
             case 'ed':
-                $sql    = "UPDATE Folder SET fol_name = '$dir_name' WHERE ID_fol = $id";
+                $sql    = "UPDATE Folder SET fol_name = '$dir_name' WHERE ID_fol = $id LIMIT 1";
                 $result = $pdo->query($sql);
                 break;
             case 'nd':
@@ -398,7 +398,7 @@
         switch($mode) {
             case 'ef':
                 $time   = get_date();
-                $sql    = "UPDATE Instruction SET ins_name = '$file_name', ins_date = '$time' WHERE ID_ins = $id";
+                $sql    = "UPDATE Instruction SET ins_name = '$file_name', ins_date = '$time' WHERE ID_ins = $id LIMIT 1";
                 
                 try {
                     $pdo->beginTransaction();
@@ -655,7 +655,7 @@
     function get_fb_messages($pdo, $page) {
         $min_cnt    = ($page - 1) * PORTION_SIZE;
         
-        $sql        = "SELECT * FROM Feedback LIMIT $min_cnt, " . PORTION_SIZE;
+        $sql        = "SELECT * FROM Feedback ORDER BY fixed LIMIT $min_cnt, " . PORTION_SIZE;
         $result     = $pdo->query($sql);
         
         // Массив названий инструкций
@@ -696,7 +696,7 @@
     }
     
     // Проверка существования записей журнала сообщений о неточностях в инструкциях (Feedback) для разрешения/ограничения дальнейшней прокрутки
-    function check_fbmessages($pdo, $page) {
+    function check_fb_messages($pdo, $page) {
         $min_cnt    = ($page - 1) * PORTION_SIZE;
         
         $sql        = "SELECT 1 FROM Feedback LIMIT $min_cnt, " . PORTION_SIZE;
@@ -709,6 +709,43 @@
         
         print json_encode(false);
         return;
+    }
+    
+    // Удаление сообщений о неточностях в инструкциях
+    function delete_fb_messages($pdo, $fb_messages_json) {
+        $fb_messages    = json_decode($fb_messages_json);
+        $sql            = "DELETE FROM Feedback WHERE ID_fb = ? LIMIT 1";
+        $result         = $pdo->prepare($sql);
+        
+        foreach($fb_messages as $fb_message) {
+            $result->execute(array($fb_message));
+        }
+        print json_encode('');
+    }
+    
+    // Изменение статуса сообщений о неточностях в инструкциях
+    function change_status_fb_messages($pdo, $fb_messages_json) {
+        $fb_messages    = json_decode($fb_messages_json);
+        
+        // Получение прошлых состояний для обновления записей путём инверсии этих состояний
+        $sql            = "SELECT fixed FROM Feedback WHERE ID_fb = ? LIMIT 1";
+        $result         = $pdo->prepare($sql);
+        $new_statuses   = [];
+        foreach($fb_messages as $fb_message) {
+            $result->execute(array($fb_message));
+            foreach($result as $row) {
+                $new_statuses[$fb_message] = $row['fixed'] == 0 ? 1 : 0;
+            }
+        }
+        
+        $sql            = "UPDATE Feedback SET fixed = ? WHERE ID_fb = ? LIMIT 1";
+        $result         = $pdo->prepare($sql);
+        
+        foreach($fb_messages as $fb_message) {
+            $result->execute(array($new_statuses[$fb_message],
+                                   $fb_message));
+        }
+        print json_encode('');
     }
     
     // --------------------------------------------------------------------------------------------------------

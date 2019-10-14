@@ -22,20 +22,6 @@ if (isset($_SESSION['instruportal_user'])) {
             function setByConst() {
                 document.getElementById('copyright').innerHTML = const_copyright;
             }
-            function getDeleteConfirmation() {
-                var answer = confirm("Удалить выбранные сообщения?\nОтменить это действие будет невозможно.");
-                if (answer) {
-                    console.log(id + ' --- ' + type);
-                    // TO DO удалить
-                }
-            }
-            function getChangeStatusConfirmation() {
-                var answer = confirm("Сменить статус выбранных сообщений?");
-                if (answer) {
-                    console.log(id + ' --- ' + type);
-                    // TO DO сменить
-                }
-            }
         </script>
     </head>
     
