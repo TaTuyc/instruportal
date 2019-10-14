@@ -55,7 +55,7 @@ function removeElem(id) {
     document.getElementById(id).parentNode.removeChild(document.getElementById(id));
 }
 function addLogoutBtn(level) {
-    parent = document.getElementById('feedbackbtn');
+    parent = document.getElementById('btncontainer');
     if (parent != null) {
         switch(level) {
             case 1:

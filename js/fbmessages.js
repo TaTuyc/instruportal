@@ -9,9 +9,6 @@ function getFBMessages(page) {
         dataType: "json",
         success: function(data) {
             var parent  = document.getElementById("allfbmtbody");
-            var content = '';
-            var num     = 0;
-            var id      = '';
             var markBtnIsEmpty = true;
             
             // Если запрашиваемая страница первая, то нужно очистить таблицу, иначе -- дополнить снизу

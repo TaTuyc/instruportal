@@ -34,8 +34,8 @@
  *---------------------------------------------------------------------------------------------------------------*/
 html {
     font-family: sans-serif;
-    /*color: #31414f;*/
-    color: #003e7d;
+    /*color: #003e7d;*/
+    color: black;
     font-size: 14pt;
 }
 body {
@@ -45,13 +45,20 @@ table {
     border-collapse: collapse;
     border: none;
 }
-* tr, td, * th {
-    border: 1px solid gray;
+* th {
+    border: 1px solid #b3ac86;
+}
+* tr, td {
+    border: 1px solid #cbd2d6;
 }
 * th {
     padding: 0.5rem;
-    background: #7a85b2;
-    color: white;
+    /*background: #7a85b2;
+    color: white;*/
+    background: #f1ebcd; /* Для старых браузеров */
+    background: linear-gradient(to top, #f1ebcd, #f9f8ed);
+    color: #594304;
+    font-weight: normal !important;
 }
 select {
     width: 100%;
@@ -144,16 +151,24 @@ input {
     padding: 0.375rem 0.75rem;
     font-size: 1rem;
     line-height: 1.5;
+    border-radius: 5px;
 }
 .feedback-btn {
-    background-color: #cccccc;
+    background-color: #cccccc; /* Для старых браузеров */
+    background: linear-gradient(to top, #bebebe, #f2eded);
+    border: 1px solid #cbcbcb;
     color: white;
     font-weight: bolder;
     float: right;
+    margin-right: 0 !important;
 }
 .confirm-btn {
-    background-color: #ff7200;
-    color: white;
+    /*background-color: #ff7200;
+    color: white;*/
+    background-color: #f1ebcd; /* Для старых браузеров */
+    background: linear-gradient(to top, #e9d7aa, #fffae9);
+    color: #594304;
+    border: 1px solid #d0af5b;
     font-weight: bolder;
     width: 100%;
 }
@@ -166,9 +181,12 @@ input {
     padding: 0;
 }
 .remove-btn {
-    background-color: black;
+    background-color: #007d20; /* Для старых браузеров */
+    background: linear-gradient(to top, #007d20, #bae6c5);
+    border: 1px solid #007a1a;
     color: white;
     font-weight: bolder;
+    float: right;
 }
 .create-btn {
     background-color: #30ff00;
@@ -201,7 +219,6 @@ input {
     padding: 0.2rem !important;
 }
 .panel-btn {
-    background: gray;
     width: 60%;
     min-width: 400px;
     max-width: 1000px;
@@ -274,8 +291,10 @@ input {
     margin: 0;
 }
 .striped tr:nth-child(odd) {
-    background-color: #acb3d0;
+    /*background-color: #acb3d0;*/
+    background-color: white;
 }
 .striped tr:nth-child(even) {
-    background-color: #acd0bf;
+    /*background-color: #acd0bf;*/
+    background-color: #f5fbf7;
 }

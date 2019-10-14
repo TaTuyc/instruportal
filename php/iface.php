@@ -12,7 +12,7 @@
                             <td style="width: 551px" class="text-center"><a href="#"><img src="./img/genlogo.png" alt="Лого" width="551px" height="62px" title="Перейти на главную страницу"></a></td>
                             <td id="pagelabel" class="text-center text-char-header">Портал инструкций по работе с АСРН-2</td>
                             <td>
-                                <button id="feedbackbtn" type="button" class="btn feedback-btn" onclick="sendFeedback('');" title="Сообщить о неточностях в инструкции">Сообщить об ошибке</button>
+                                <button type="button" class="btn feedback-btn" onclick="sendFeedback('');" title="Сообщить о неточностях в инструкции">Сообщить об ошибке</button>
                             </td>
                         </tr>
                     </table>
@@ -26,8 +26,7 @@
                         <tr>
                             <td style="width: 551px" class="text-center"><a href="../index.php"><img src="../img/genlogo.png" alt="Лого" width="551px" height="62px" title="Перейти на главную страницу"></a></td>
                             <td id="pagelabel" class="text-center text-char-header">Портал инструкций по работе с АСРН-2</td>
-                            <td>
-                                <button id="feedbackbtn" type="button" class="btn feedback-btn" style="color: transparent; background-color: transparent">Сообщить об ошибке</button>
+                            <td id="btncontainer">
                             </td>
                         </tr>
                     </table>
@@ -41,8 +40,7 @@
                         <tr>
                             <td style="width: 551px" class="text-center"><a href="../../index.php"><img src="../../img/genlogo.png" alt="Лого" width="551px" height="62px" title="Перейти на главную страницу"></a></td>
                             <td id="pagelabel" class="text-center text-char-header">Портал инструкций по работе с АСРН-2</td>
-                            <td>
-                                <button id="feedbackbtn" type="button" class="btn feedback-btn" style="color: transparent; background-color: transparent">Сообщить об ошибке</button>
+                            <td id="btncontainer">
                             </td>
                         </tr>
                     </table>
